@@ -17,6 +17,8 @@ describe('index', () => {
             'LocationLite',
             'LocationFull',
             'preserveQueryInUrl',
+            'buildHref',
+            'calculateMultiHashFragment'
         ];
 
         // Act.

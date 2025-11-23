@@ -264,4 +264,32 @@ describe("LocationLite", () => {
             expect(act).toThrow();
         });
     });
+    describe('path', () => {
+        const initialPath = '/initial/path';
+        beforeEach(() => {
+            browserMocks.simulateHistoryChange(undefined, `http://example.com${initialPath}`);
+        });
+
+        test("Should return the URL's path.", () => {
+            expect(location.path).toBe(initialPath);
+        });
+
+        test("Should update when location changes.", () => {
+            expect(location.path).toBe(initialPath);
+            const newPath = '/new/path/value';
+            location.navigate(newPath);
+            expect(location.path).toBe(newPath);
+        });
+
+        test("Should remove the drive letter on Windows file URLs.", () => {
+            // Arrange.
+            const fileUrl = 'file:///C:/path/to/file.txt';
+
+            // Act.
+            browserMocks.simulateHistoryChange(undefined, fileUrl);
+            
+            // Assert.
+            expect(location.path).toBe('/path/to/file.txt');
+        });
+    });
 });

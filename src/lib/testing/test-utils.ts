@@ -24,7 +24,7 @@ export type RoutingUniverse = {
     /**
      * Short universe identifier.  Used in test titles and descriptions.
      */
-    text: string;
+    text: 'IPR' | 'PR' | 'IHR' | 'HR' | 'IMHR' | 'MHR';
     /**
      * Descriptive universe name.  More of a document-by-code property.  Not commonly used as it makes text very long.
      */

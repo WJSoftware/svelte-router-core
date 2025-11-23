@@ -1,5 +1,6 @@
-import { describe, test, expect, beforeAll, afterAll, beforeEach } from "vitest";
-import { calculateHref, type CalculateHrefOptions } from "./calculateHref.js";
+import { describe, test, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
+import { calculateHref } from "./calculateHref.js";
+import * as calculateMultiHashHrefModule from "./calculateMultiHashFragment.js";
 import { init } from "../init.js";
 import { location } from "./Location.js";
 import { ROUTING_UNIVERSES, ALL_HASHES } from "$test/test-utils.js";
@@ -164,30 +165,18 @@ describe("calculateHref", () => {
             });
 
             if (universe.hashMode === 'multi') {
-                describe("Multi-hash routing behavior", () => {
-                    test("Should preserve all existing paths when adding a new path", () => {
+                describe("Multi-hash routing integration", () => {
+                    test("Should delegate to calculateMultiHashHref for multi-hash calculations", () => {
                         // Arrange
                         const newPath = "/sample/path";
-                        const newHashId = 'new';
+                        const hashId = universe.hash || universe.defaultHash;
 
                         // Act
-                        const href = calculateHref({ hash: newHashId }, newPath);
+                        const href = calculateHref({ hash: hashId }, newPath);
 
-                        // Assert
-                        expect(href).toBe(`${baseHash};${newHashId}=${newPath}`);
-                    });
-
-                    test("Should preserve all existing paths when updating an existing path", () => {
-                        // Arrange
-                        const newPath = "/sample/path";
-                        const existingHashId = universe.hash || universe.defaultHash; // Use the universe's hash ID
-                        const expected = baseHash.replace(new RegExp(`(${existingHashId}=)[^;]+`), `$1${newPath}`);
-
-                        // Act
-                        const href = calculateHref({ hash: existingHashId }, newPath);
-
-                        // Assert
-                        expect(href).toEqual(expected);
+                        // Assert - Verify the result follows multi-hash format
+                        expect(href).toMatch(/^#[^;]+=\/sample\/path/);
+                        expect(href).toContain(';p2=path/two'); // Should preserve existing paths
                     });
                 });
             }
@@ -272,6 +261,81 @@ describe("calculateHref", () => {
 
         test("Should allow paths that start with protocol-like strings but are not URLs", () => {
             expect(() => calculateHref("/http-endpoint", "/https-folder")).not.toThrow();
+        });
+    });
+
+    describe("Integration with calculateMultiHashHref", () => {
+        let cleanup: Function;
+        
+        beforeAll(() => {
+            cleanup = init({ hashMode: 'multi' });
+        });
+        
+        afterAll(() => {
+            cleanup();
+        });
+
+        beforeEach(() => {
+            location.url.href = "https://example.com#p1=/existing/path;p2=/another/path";
+        });
+
+        test("Should call calculateMultiHashHref when hash is a string (named hash routing)", () => {
+            // Arrange
+            const spy = vi.spyOn(calculateMultiHashHrefModule, 'calculateMultiHashFragment').mockReturnValue('p1=/new/path;p2=/another/path');
+            const newPath = "/new/path";
+
+            // Act
+            const href = calculateHref({ hash: 'p1' }, newPath);
+
+            // Assert
+            expect(spy).toHaveBeenCalledWith({ p1: newPath });
+            expect(href).toBe('#p1=/new/path;p2=/another/path');
+            
+            spy.mockRestore();
+        });
+
+        test("Should not call calculateMultiHashHref when hash is false (path routing)", () => {
+            // Arrange
+            const spy = vi.spyOn(calculateMultiHashHrefModule, 'calculateMultiHashFragment');
+            const newPath = "/new/path";
+
+            // Act
+            const href = calculateHref({ hash: false }, newPath);
+
+            // Assert
+            expect(spy).not.toHaveBeenCalled();
+            expect(href).toBe(newPath);
+            
+            spy.mockRestore();
+        });
+
+        test("Should not call calculateMultiHashHref when hash is true (single hash routing)", () => {
+            // Arrange
+            const spy = vi.spyOn(calculateMultiHashHrefModule, 'calculateMultiHashFragment');
+            const newPath = "/new/path";
+
+            // Act
+            const href = calculateHref({ hash: true }, newPath);
+
+            // Assert
+            expect(spy).not.toHaveBeenCalled();
+            expect(href).toBe('#/new/path');
+            
+            spy.mockRestore();
+        });
+
+        test("Should pass correct parameters to calculateMultiHashHref with joined paths", () => {
+            // Arrange
+            const spy = vi.spyOn(calculateMultiHashHrefModule, 'calculateMultiHashFragment').mockReturnValue('p1=/path1/path2;p2=/another/path');
+            
+            // Act
+            const href = calculateHref({ hash: 'p1' }, '/path1', '/path2');
+
+            // Assert
+            expect(spy).toHaveBeenCalledWith({ p1: '/path1/path2' });
+            expect(href).toBe('#p1=/path1/path2;p2=/another/path');
+            
+            spy.mockRestore();
         });
     });
 });

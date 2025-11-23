@@ -102,6 +102,40 @@ export type PatternRouteInfo = CoreRouteInfo & {
 export type RouteInfo = RegexRouteInfo | PatternRouteInfo;
 
 /**
+ * Distributes the Omit<T, 'ignoreForFallback'> over unions.
+ */
+type NoIgnoreForFallback<T> = T extends any ? Omit<T, 'ignoreForFallback'> : never;
+
+/**
+ * Defines the shape of redirection information used by the Redirector class.
+ */
+export type RedirectedRouteInfo = NoIgnoreForFallback<RouteInfo> & {
+    /**
+     * The HREF to navigate to (via `location.navigate()` or `location.goTo()`).  It can be a string or a function that 
+     * receives the matched route parameters and returns a string.
+     */
+    href: string | ((routeParams: Record<string, ParameterValue> | undefined) => string);
+} & ({
+    /**
+     * Indicates that the redirection should use the `Location.goTo` method.
+     */
+    goTo: true;
+    /**
+     * Options for the `Location.goTo` method.
+     */
+    options?: GoToOptions;
+} | {
+    /**
+     * Indicates that the redirection should use the `Location.goTo` method.
+     */
+    goTo?: false;
+    /**
+     * Options for the `Location.navigate` method.
+     */
+    options?: NavigateOptions;
+});
+
+/**
  * Defines the options that can be used when calling `Location.goTo`.
  */
 export type GoToOptions = {
@@ -150,6 +184,11 @@ export type NavigateOptions = Omit<GoToOptions, 'state'> & {
 });
 
 /**
+ * Defines the options for the `buildHref` function.
+ */
+export type BuildHrefOptions = Pick<GoToOptions, 'preserveQuery'>;
+
+/**
  * Defines the capabilities of the location object, central for all routing functionality.
  */
 export interface Location {
@@ -157,6 +196,12 @@ export interface Location {
      * Gets a reactive URL object with the current window's URL.
      */
     readonly url: URL;
+    /**
+     * Gets the environment's current path, "sanitized" for the cases of `file:` URL's in Windows.
+     * 
+     * It is highly recommended to always use this path instead of `Location.url.pathname` whenever possible.
+     */
+    readonly path: string;
     /**
      * Gets the current hash path or paths, depending on how the library was initialized.
      * 

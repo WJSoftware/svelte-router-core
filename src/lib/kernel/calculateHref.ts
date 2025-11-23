@@ -2,8 +2,9 @@ import type { Hash, PreserveQuery } from "../types.js";
 import { dissectHrefs } from "./dissectHrefs.js";
 import { location } from "./Location.js";
 import { mergeQueryParams } from "./preserveQuery.js";
-import { joinPaths } from "./RouterEngine.svelte.js";
+import { joinPaths } from "./RouteHelper.svelte.js";
 import { resolveHashValue } from "./resolveHashValue.js";
+import { calculateMultiHashFragment } from "./calculateMultiHashFragment.js";
 
 export type CalculateHrefOptions = {
     /**
@@ -27,21 +28,7 @@ export type CalculateHrefOptions = {
     hash?: Hash;
 };
 
-function calculateMultiHashHref(hashId: string, newPath: string) {
-    let idExists = false;
-    let finalUrl = '';
-    for (let [id, path] of Object.entries(location.hashPaths)) {
-        if (id === hashId) {
-            idExists = true;
-            path = newPath;
-        }
-        finalUrl += `;${id}=${path}`;
-    }
-    if (!idExists) {
-        finalUrl += `;${hashId}=${newPath}`;
-    }
-    return finalUrl.substring(1);
-}
+
 
 /**
  * Combines the given HREF's into a single HREF that also includes any query string parameters that are either carried
@@ -99,7 +86,7 @@ export function calculateHref(...allArgs: (CalculateHrefOptions | string | undef
     }
     searchParams = mergeQueryParams(searchParams, preserveQuery);
     const path = typeof hash === 'string' ?
-        calculateMultiHashHref(hash, joinPaths(...dissected.paths)) :
+        calculateMultiHashFragment({ [hash]: joinPaths(...dissected.paths) }) :
         joinPaths(...dissected.paths);
     let hashValue = hash === false ?
         dissected.hashes.find(h => h.length) || (preserveHash ? location.url.hash.substring(1) : '') :

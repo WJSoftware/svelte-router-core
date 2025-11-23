@@ -14,7 +14,7 @@ import { assertAllowedRoutingMode } from "$lib/utils.js";
  */
 export class LocationLite implements Location {
     #historyApi: HistoryApi;
-    
+
     hashPaths = $derived.by(() => {
         if (routingOptions.hashMode === 'single') {
             return { single: this.#historyApi.url.hash.substring(1) };
@@ -29,6 +29,11 @@ export class LocationLite implements Location {
             result[id] = path;
         }
         return result;
+    });
+
+    path = $derived.by(() => {
+        const hasDriveLetter = this.url.protocol.startsWith('file:') && this.url.pathname[2] === ':';
+        return hasDriveLetter ? this.url.pathname.substring(3) : this.url.pathname;
     });
 
     constructor(historyApi?: HistoryApi) {

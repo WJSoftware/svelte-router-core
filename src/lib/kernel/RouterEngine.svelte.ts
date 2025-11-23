@@ -1,9 +1,10 @@
-import type { AndUntyped, Hash, PatternRouteInfo, RegexRouteInfo, RouteInfo, RouteStatus } from "../types.js";
+import type { AndUntyped, Hash, RegexRouteInfo, RouteInfo, RouteStatus } from "../types.js";
 import { traceOptions, registerRouter, unregisterRouter } from "./trace.svelte.js";
 import { location } from "./Location.js";
 import { routingOptions } from "./options.js";
 import { resolveHashValue } from "./resolveHashValue.js";
 import { assertAllowedRoutingMode } from "$lib/utils.js";
+import { joinPaths, RouteHelper } from "./RouteHelper.svelte.js";
 
 /**
  * RouterEngine's options.
@@ -30,62 +31,9 @@ function isRouterEngine(obj: unknown): obj is RouterEngine {
     return obj instanceof RouterEngine;
 }
 
-/**
- * Joins the provided paths into a single path.
- * @param paths Paths to join.
- * @returns The joined path.
- */
-export function joinPaths(...paths: string[]) {
-    const result = paths.reduce((acc, path, index) => {
-        const trimmedPath = (path ?? '').replace(/^\/|\/$/g, '');
-        return acc + (index > 0 && !acc.endsWith('/') && trimmedPath.length > 0 ? '/' : '') + trimmedPath;
-    }, hasLeadingSlash(paths) ? '/' : '');
-    return noTrailingSlash(result);
-}
-
-function hasLeadingSlash(paths: (string | undefined)[]) {
-    for (let path of paths) {
-        if (!path) {
-            continue;
-        }
-        return path.startsWith('/');
-    }
-    return false;
-}
-
-function noTrailingSlash(path: string) {
-    return path !== '/' && path.endsWith('/') ? path.slice(0, -1) : path;
-}
-
 function routeInfoIsRegexInfo(info: unknown): info is RegexRouteInfo {
     return (info as RegexRouteInfo).regex instanceof RegExp;
 }
-
-function escapeRegExp(string: string): string {
-    return string.replace(/[.+^${}()|[\]\\]/g, '\\$&');
-}
-
-function tryParseValue(value: string) {
-    if (value === '' || value === undefined || value === null) {
-        return value;
-    }
-    const num = Number(value);
-    if (!isNaN(num)) {
-        return num;
-    }
-    if (value === 'true') {
-        return true;
-    }
-    if (value === 'false') {
-        return false;
-    }
-    return value;
-}
-
-const identifierRegex = /(\/)?:([a-zA-Z_]\w*)(\?)?/g;
-const paramNamePlaceholder = "paramName";
-const paramValueRegex = `(?<${paramNamePlaceholder}>[^/]+)`;
-const restParamRegex = /\/\*$/;
 
 /**
  * Internal key used to access the route patterns of a router engine.
@@ -99,10 +47,10 @@ export const routePatternsKey = Symbol();
  * `Route` components.
  */
 export class RouterEngine {
+    #routeHelper;
     #cleanup = false;
     #parent: RouterEngine | undefined;
     #resolvedHash: Hash;
-    #hashId: string | undefined;
     /**
      * Gets or sets the router's identifier.  This is displayed by the `RouterTracer` component.
      */
@@ -129,7 +77,7 @@ export class RouterEngine {
         map.set(
             key, routeInfoIsRegexInfo(route) ?
             { regex: route.regex, and: route.and, ignoreForFallback: !!route.ignoreForFallback } :
-            this.#parseRoutePattern(route)
+            this.#routeHelper.parseRoutePattern(route, this.basePath)
         );
         return map;
     }, new Map<string, { regex?: RegExp; and?: AndUntyped; ignoreForFallback: boolean; }>()));
@@ -138,25 +86,18 @@ export class RouterEngine {
         return this.#routePatterns;
     }
 
-    testPath = $derived.by(() => noTrailingSlash(this.#hashId ? (location.hashPaths[this.#hashId] || '/') : this.path));
+    /**
+     * Gets the test path this router engine uses to test route paths.  Its value depends on the router's routing mode 
+     * (universe).
+     */
+    readonly testPath = $derived.by(() => this.#routeHelper.testPath);
 
     #routeStatusData = $derived.by(() => {
         const routeStatus = {} as Record<string, RouteStatus>;
         let noMatches = true;
         for (let routeKey of Object.keys(this.routes)) {
             const pattern = this.#routePatterns.get(routeKey)!;
-            const matches = pattern.regex ? pattern.regex.exec(this.testPath) : null;
-            const routeParams = matches?.groups ? { ...matches.groups } as RouteStatus['routeParams'] : undefined;
-            if (routeParams) {
-                for (let key in routeParams) {
-                    if (routeParams[key] === undefined) {
-                        delete routeParams[key];
-                        continue;
-                    }
-                    routeParams[key] = tryParseValue(decodeURIComponent(routeParams[key] as string));
-                }
-            }
-            const match = (!!matches || !pattern.regex) && (!pattern.and || pattern.and(routeParams));
+            const [match, routeParams] = this.#routeHelper.testRoute(pattern);
             noMatches = noMatches && (pattern.ignoreForFallback ? true : !match);
             routeStatus[routeKey] = {
                 match,
@@ -175,32 +116,6 @@ export class RouterEngine {
      * patterns.
      */
     noMatches = $derived(this.#routeStatusData[1]);
-    /**
-     * Parses the string pattern in the provided route information object into a regular expression.
-     * @param routeInfo Pattern route information to parse.
-     * @returns An object with the regular expression and the optional predicate function.
-     */
-    #parseRoutePattern(routeInfo: PatternRouteInfo): { regex?: RegExp; and?: AndUntyped; ignoreForFallback: boolean; } {
-        if (!routeInfo.pattern) {
-            return {
-                and: routeInfo.and,
-                ignoreForFallback: !!routeInfo.ignoreForFallback
-            }
-        }
-        const fullPattern = joinPaths(this.basePath, routeInfo.pattern === '/' ? '' : routeInfo.pattern);
-        const escapedPattern = escapeRegExp(fullPattern);
-        let regexPattern = escapedPattern.replace(identifierRegex, (_match, startingSlash, paramName, optional, offset) => {
-            let regex = paramValueRegex.replace(paramNamePlaceholder, paramName);
-            return (startingSlash ? `/${optional ? '?' : ''}` : '')
-                + (optional ? `(?:${regex})?` : regex);
-        });
-        regexPattern = regexPattern.replace(restParamRegex, `(?<rest>.*)`);
-        return {
-            regex: new RegExp(`^${regexPattern}$`, routeInfo.caseSensitive ? undefined : 'i'),
-            and: routeInfo.and,
-            ignoreForFallback: !!routeInfo.ignoreForFallback
-        };
-    }
     /**
      * Initializes a new instance of this class with the specified options.
      */
@@ -229,11 +144,9 @@ export class RouterEngine {
             if (routingOptions.hashMode !== 'multi' && typeof this.#resolvedHash === 'string') {
                 throw new Error("A hash path ID was given, but is only allowed when the library's hash mode has been set to 'multi'.");
             }
-            this.#hashId = typeof this.#resolvedHash === 'string' ?
-                this.#resolvedHash :
-                (this.#resolvedHash ? 'single' : undefined);
         }
         assertAllowedRoutingMode(this.#resolvedHash);
+        this.#routeHelper = new RouteHelper(this.#resolvedHash);
         if (traceOptions.routerHierarchy) {
             registerRouter(this);
             this.#cleanup = true;
@@ -246,16 +159,6 @@ export class RouterEngine {
      */
     get url() {
         return location.url;
-    }
-    /**
-     * Gets the environment's current path.
-     * 
-     * This is a sanitized version of `location.url.pathname` that strips out drive letters for the case of Electron in 
-     * Windows.  It is highly recommended to always use this path whenever possible.
-     */
-    get path() {
-        const hasDriveLetter = this.url.protocol.startsWith('file:') && this.url.pathname[2] === ':';
-        return hasDriveLetter ? this.url.pathname.substring(3) : this.url.pathname;
     }
     /**
      * Gets the browser's current state.

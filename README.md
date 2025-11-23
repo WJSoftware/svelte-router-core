@@ -25,6 +25,8 @@
 [@svelte-router/kit](https://github.com/WJSoftware/svelte-router-kit)
 + **Electron support**:  Works with Electron (all routing modes)
 + **Reactivity-based**:  All data is reactive, reducing the need for events and imperative programming.
++ **⚡NEW! URL Redirection**:  Use `Redirector` instances to route users from deprecated URL's to new URL's, even across 
+routing universes.
 
 **Components**:
 
@@ -469,6 +471,70 @@ As seen, the value of the `href` property never changes.  It's always a path, re
 
 At your own risk, you could use exported API like `getRouterContext()` and `setRouterContext()` to perform unholy acts 
 on the router layouts, again, **at your own risk**.
+
+## URL Redirection
+
+Create `Redirector` class instances to route users from deprecated URL's to new URL's.  The redirection can even cross 
+the routing universe boundary.  In other words, URL's from one routing universe can be redirected to a different 
+routing universe.
+
+This is a same-universe example:
+
+```svelte
+<script lang="ts">
+  import { Redirector } from "@svelte-router/core";
+  import { onMount } from "svelte";
+
+  const redirector = new Redirector(/* hash value, or nothing for default universe */);
+  redirector.redirections.push({
+    pattern: `/orders/:id`,
+    href: (rp) => `/profile/my-orders/${rp?.id}`
+  });
+
+  onMount(() => () => redirector.dispose());
+  ...
+</script>
+```
+
+The constructor of the class sets a Svelte `$effect` up, so instances of this class must be created in places where 
+Svelte effects are acceptable, like the initialization code of a component (like in the example).
+
+Redirections are almost identical to route definitions, and even use the same matching algorithm.  The `pattern` is 
+used to match the current URL (it defines the deprecated URL), while `href` defines the new URL users will be 
+redirected to.  As seen in the example, parameters can be defined, and `href`, when written as a function, receives 
+the route parameters as the first argument.
+
+### Cross-Universe Redirection
+
+Crossing the universe boundary when redirecting is very simple, but there's a catch:  Cleaning up the old URL.
+
+```svelte
+<script lang="ts">
+  import { Redirector } from "@svelte-router/core";
+
+  const redirector = new Redirector(false);
+  redirector.redirections.push({
+    pattern: `/orders/:id`,
+    href: (rp) => `/profile/my-orders/${rp?.id}`,
+    options: { hash: true }
+  });
+  ...
+</script>
+```
+
+The modifications in the example are:
+
+1. Explicit hash value in the redirector's constructor.
+2. Destination hash value specifications via options.
+
+Now comes the aforementioned catch:  The "final" URL will be looking like this:  `https://example.com/orders/123#/profile/my-orders/123`.
+
+There's no good way for this library to provide a safe way to "clean up" the path in the deprecated routing universe, 
+so it is up to consumers of this library to clean up.  How?  The recommendation is to tell the redirector to use 
+`location.goTo()` and provide a full HREF with all universes accounted for.
+
+See the [Redirecting](https://wjfe-n-savant.hashnode.space/wjfe-n-savant/navigating/redirecting) topic in the online 
+documentation for full details, including helper functions available to you.
 
 ---
 

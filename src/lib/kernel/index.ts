@@ -1,7 +1,9 @@
 export { location } from "./Location.js";
-export { RouterEngine, joinPaths } from "./RouterEngine.svelte.js";
+export { RouterEngine } from "./RouterEngine.svelte.js";
+export { joinPaths } from "./RouteHelper.svelte.js";
 export { isConformantState } from "./isConformantState.js";
 export { calculateHref } from "./calculateHref.js";
+export { calculateMultiHashFragment } from "./calculateMultiHashFragment.js";
 export { calculateState } from "./calculateState.js";
 export { initCore } from "./initCore.js";
 export { LocationState } from "./LocationState.svelte.js";
@@ -10,3 +12,4 @@ export { InterceptedHistoryApi } from "./InterceptedHistoryApi.svelte.js";
 export { LocationLite } from "./LocationLite.svelte.js";
 export { LocationFull } from "./LocationFull.js";
 export { preserveQueryInUrl } from "./preserveQuery.js";
+export { buildHref } from "./buildHref.js";
