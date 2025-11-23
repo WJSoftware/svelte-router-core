@@ -14,17 +14,35 @@ export function preserveQueryInUrl(url: string, preserveQuery: PreserveQuery): s
 }
 
 /**
- * Internal helper to merge query parameters from 2 URL's into a third.
+ * Helper that merges query parameters from 2 URL's together.
+ * 
+ * ### Important Notes
+ * 
+ * + To preserve system resources, `set1` is modified directly to contain the merged results.
+ * + If the provided `set1` is `undefined` and all query parameters are to be preserved, then `set2` will be returned 
+ * directly.
+ * + If `set1` is `undefined`, a new `URLSearchParams` will be created (and returned) to contain the merged results.
+ * + The return value will be `undefined` whenever `set1` is `undefined` and `set2` is also `undefined` or empty.
  * @param set1: First set of query parameters.
  * @param set2: Second set of query parameters.
+ * @returns The merged `URLSearchParams`, or `undefined`.
  */
 export function mergeQueryParams(set1: URLSearchParams | undefined, set2: URLSearchParams | undefined): URLSearchParams | undefined;
 /**
- * Internal helper to merge query parameters for calculateHref.
- * This handles the URLSearchParams merging logic without URL reconstruction.
- * @param existingParams Existing URLSearchParams from the new URL.
+ * Helper that merges the given search parameters with the ones found in the current environment's URL.
+ * 
+ * ### Important Notes
+ * 
+ * + To preserve system resources, `existingParams` is modified directly to contain the merged results.
+ * + The `URLSearchParams` from the global `location` object will be returned when all query parameters are preserved 
+ * and `existingParams` is `undefined`.
+ * + If `existingParams` is `undefined`, a new `URLSearchParams` will be created (and returned) to contain the merged 
+ * results.
+ * + The return value will be `undefined` whenever `existingParams` is `undefined` and the global `location`'s search 
+ * parameters are empty.
+ * @param existingParams Existing `URLSearchParams` from the new URL.
  * @param preserveQuery The query preservation options.
- * @returns The merged URLSearchParams or undefined if no merging is needed.
+ * @returns The merged `URLSearchParams`, or `undefined`.
  */
 export function mergeQueryParams(existingParams: URLSearchParams | undefined, preserveQuery?: PreserveQuery): URLSearchParams | undefined;
 export function mergeQueryParams(set1: URLSearchParams | undefined, pqOrSet2: PreserveQuery | URLSearchParams | undefined): URLSearchParams | undefined {
