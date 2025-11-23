@@ -1,5 +1,5 @@
-import { describe, expect, test } from "vitest";
-import { resetRoutingOptions, routingOptions } from "./options.js";
+import { describe, expect, test, beforeEach } from "vitest";
+import { resetRoutingOptions, routingOptions, setRoutingOptions } from "./options.js";
 
 describe("options", () => {
     test("Should have correct default value for hashMode option.", () => {
@@ -47,10 +47,132 @@ describe("options", () => {
         expect(typeof routingOptions.defaultHash).toBe('boolean');
     });
 
+    describe('setRoutingOptions', () => {
+        beforeEach(() => {
+            // Reset to defaults before each test
+            resetRoutingOptions();
+        });
+
+        test("Should merge options with current values when partial options provided.", () => {
+            // Arrange - Set initial non-default values
+            routingOptions.hashMode = 'multi';
+            routingOptions.defaultHash = 'customHash';
+
+            // Act - Set only one option
+            setRoutingOptions({ disallowPathRouting: true });
+
+            // Assert - Only specified option changed, others preserved
+            expect(routingOptions.hashMode).toBe('multi');
+            expect(routingOptions.defaultHash).toBe('customHash');
+            expect(routingOptions.disallowPathRouting).toBe(true);
+            expect(routingOptions.disallowHashRouting).toBe(false);
+        });
+
+        test("Should set all options when full configuration provided.", () => {
+            // Arrange & Act
+            setRoutingOptions({
+                hashMode: 'multi',
+                defaultHash: 'namedHash',
+                disallowPathRouting: true,
+                disallowHashRouting: true,
+                disallowMultiHashRouting: false
+            });
+
+            // Assert
+            expect(routingOptions.hashMode).toBe('multi');
+            expect(routingOptions.defaultHash).toBe('namedHash');
+            expect(routingOptions.disallowPathRouting).toBe(true);
+            expect(routingOptions.disallowHashRouting).toBe(true);
+            expect(routingOptions.disallowMultiHashRouting).toBe(false);
+        });
+
+        test("Should do nothing when called with undefined options.", () => {
+            // Arrange - Set initial values
+            const original = structuredClone(routingOptions);
+
+            // Act
+            setRoutingOptions(undefined);
+
+            // Assert - No changes
+            expect(routingOptions).deep.equal(original);
+        });
+
+        test("Should do nothing when called with empty options.", () => {
+            // Arrange - Set initial values
+            const original = structuredClone(routingOptions);
+
+            // Act
+            setRoutingOptions({});
+
+            // Assert - No changes
+            expect(routingOptions).deep.equal(original);
+        });
+
+        describe('Runtime validation', () => {
+            test("Should throw error when hashMode is 'single' and defaultHash is a string.", () => {
+                // Arrange & Act & Assert
+                expect(() => {
+                    setRoutingOptions({
+                        hashMode: 'single',
+                        defaultHash: 'namedHash'
+                    });
+                }).toThrow("Using a named hash path as the default path can only be done when 'hashMode' is set to 'multi'.");
+            });
+
+            test("Should throw error when hashMode is 'multi' and defaultHash is true.", () => {
+                // Arrange & Act & Assert
+                expect(() => {
+                    setRoutingOptions({
+                        hashMode: 'multi',
+                        defaultHash: true
+                    });
+                }).toThrow("Using classic hash routing as default can only be done when 'hashMode' is set to 'single'.");
+            });
+
+            test("Should throw error when existing hashMode is 'single' and setting defaultHash to string.", () => {
+                // Arrange
+                routingOptions.hashMode = 'single';
+
+                // Act & Assert
+                expect(() => {
+                    setRoutingOptions({ defaultHash: 'namedHash' });
+                }).toThrow("Using a named hash path as the default path can only be done when 'hashMode' is set to 'multi'.");
+            });
+
+            test("Should throw error when existing defaultHash is true and setting hashMode to 'multi'.", () => {
+                // Arrange
+                routingOptions.defaultHash = true;
+
+                // Act & Assert
+                expect(() => {
+                    setRoutingOptions({ hashMode: 'multi' });
+                }).toThrow("Using classic hash routing as default can only be done when 'hashMode' is set to 'single'.");
+            });
+
+            test.each([
+                { hashMode: 'single' as const, defaultHash: false, scenario: 'single hash mode with defaultHash false' },
+                { hashMode: 'single' as const, defaultHash: true, scenario: 'single hash mode with defaultHash true' },
+                { hashMode: 'multi' as const, defaultHash: false, scenario: 'multi hash mode with defaultHash false' },
+                { hashMode: 'multi' as const, defaultHash: 'namedHash', scenario: 'multi hash mode with named hash' }
+            ])("Should allow valid combination: $scenario .", ({ hashMode, defaultHash }) => {
+                // Arrange & Act & Assert
+                expect(() => {
+                    setRoutingOptions({ hashMode, defaultHash });
+                }).not.toThrow();
+
+                expect(routingOptions.hashMode).toBe(hashMode);
+                expect(routingOptions.defaultHash).toBe(defaultHash);
+            });
+        });
+    });
+
     describe('resetRoutingOptions', () => {
         test("Should reset all options to defaults when resetRoutingOptions is called.", () => {
-            // Arrange.
-            const original = structuredClone(routingOptions);
+            // Arrange - First reset to ensure we start from defaults, then capture the baseline
+            resetRoutingOptions();
+            const expectedDefaults = structuredClone(routingOptions);
+            
+            // Modify all options to non-default values
             routingOptions.hashMode = 'multi';
             routingOptions.defaultHash = true;
             routingOptions.disallowPathRouting = true;
@@ -61,7 +183,7 @@ describe("options", () => {
             resetRoutingOptions();
 
             // Assert.
-            expect(routingOptions).deep.equal(original);
+            expect(routingOptions).deep.equal(expectedDefaults);
         });
     });
 });

@@ -4,7 +4,7 @@ import { initCore } from './initCore.js';
 import { SvelteURL } from "svelte/reactivity";
 import { location } from "./Location.js";
 import { defaultTraceOptions, traceOptions } from "./trace.svelte.js";
-import { defaultRoutingOptions, routingOptions } from "./options.js";
+import { defaultRoutingOptions, resetRoutingOptions, routingOptions } from "./options.js";
 import { logger } from "./Logger.js";
 
 const initialUrl = 'http://example.com/';
@@ -19,6 +19,7 @@ const locationMock: Location = {
     on: vi.fn(),
     go: vi.fn(),
     navigate: vi.fn(),
+    get path() { return this.url.pathname; },
 };
 
 describe('initCore', () => {
@@ -26,6 +27,7 @@ describe('initCore', () => {
     afterEach(() => {
         vi.resetAllMocks();
         cleanup?.();
+        resetRoutingOptions();
     });
     test("Should initialize with all the expected default values.", () => {
         // Act.
@@ -53,20 +55,10 @@ describe('initCore', () => {
             error: () => { }
         };
 
-        // Capture initial state
-        const initialLoggerIsOffLogger = logger !== globalThis.console;
-        const initialRoutingOptions = {
-            hashMode: routingOptions.hashMode,
-            defaultHash: routingOptions.defaultHash
-        };
-        const initialTraceOptions = {
-            routerHierarchy: traceOptions.routerHierarchy
-        };
-
-        // Act - Initialize with custom options
+        // Act - Initialize with custom options (use valid combo)
         cleanup = initCore(locationMock, {
             hashMode: 'multi',
-            defaultHash: true,
+            defaultHash: 'customHash',
             logger: customLogger,
             trace: {
                 routerHierarchy: true
@@ -76,7 +68,7 @@ describe('initCore', () => {
         // Assert - Check that options were applied
         expect(logger).toBe(customLogger);
         expect(routingOptions.hashMode).toBe('multi');
-        expect(routingOptions.defaultHash).toBe(true);
+        expect(routingOptions.defaultHash).toBe('customHash');
         expect(traceOptions.routerHierarchy).toBe(true);
         expect(location).toBeDefined();
 
@@ -84,11 +76,11 @@ describe('initCore', () => {
         cleanup();
         cleanup = undefined;
 
-        // Assert - Check that everything was rolled back
-        expect(logger !== globalThis.console).toBe(initialLoggerIsOffLogger); // Back to offLogger
-        expect(routingOptions.hashMode).toBe(initialRoutingOptions.hashMode);
-        expect(routingOptions.defaultHash).toBe(initialRoutingOptions.defaultHash);
-        expect(traceOptions.routerHierarchy).toBe(initialTraceOptions.routerHierarchy);
+        // Assert - Check that everything was rolled back to library defaults
+        expect(logger).not.toBe(customLogger); // Should revert to offLogger
+        expect(routingOptions.hashMode).toBe(defaultRoutingOptions.hashMode);
+        expect(routingOptions.defaultHash).toBe(defaultRoutingOptions.defaultHash);
+        expect(traceOptions.routerHierarchy).toBe(defaultTraceOptions.routerHierarchy);
         expect(location).toBeNull();
     });
     test("Should throw an error when called a second time without proper prior cleanup.", () => {
@@ -103,53 +95,57 @@ describe('initCore', () => {
     });
     describe('cleanup', () => {
         test("Should rollback everything to defaults.", async () => {
-            // Arrange.
-            const uninitializedLogger = logger;
+            // Arrange - Initialize with custom options
             cleanup = initCore(locationMock, {
                 hashMode: 'multi',
-                defaultHash: true,
+                defaultHash: 'abc',
                 trace: {
                     routerHierarchy: !defaultTraceOptions.routerHierarchy
                 }
             });
-            // Verify options were applied
+            // Verify options were applied (no type conversion occurs)
             expect(routingOptions.hashMode).toBe('multi');
-            expect(routingOptions.defaultHash).toBe(true);
-            expect(logger).not.toBe(uninitializedLogger);
+            expect(routingOptions.defaultHash).toBe('abc');
+            expect(logger).toBe(globalThis.console); // Default logger when none specified
             expect(traceOptions.routerHierarchy).toBe(!defaultTraceOptions.routerHierarchy);
 
             // Act - Cleanup
             cleanup();
             cleanup = undefined;
 
-            // Assert - Check that routing options were reset to defaults
-            expect(routingOptions.hashMode).toBe('single');
-            expect(routingOptions.defaultHash).toBe(false);
-            expect(logger).toBe(uninitializedLogger);
+            // Assert - Check that all options were reset to library defaults
+            expect(routingOptions.hashMode).toBe(defaultRoutingOptions.hashMode);
+            expect(routingOptions.defaultHash).toBe(defaultRoutingOptions.defaultHash);
+            expect(logger).not.toBe(globalThis.console); // Reverts to offLogger (uninitialized state)
             expect(traceOptions).toEqual(defaultTraceOptions);
         });
         test("Should handle multiple init/cleanup cycles properly.", async () => {
-            // Arrange.
-            const uninitializedLogger = logger;
+            // Capture initial logger state for comparison
+            const initialLogger = logger;
+            
+            // First cycle
             cleanup = initCore(locationMock, {
                 logger: { debug: () => { }, log: () => { }, warn: () => { }, error: () => { } }
             });
-            expect(logger).not.toBe(uninitializedLogger);
+            expect(logger).not.toBe(initialLogger);
             expect(location).toBeDefined();
+            
             cleanup();
             cleanup = undefined;
-            expect(logger).toBe(uninitializedLogger);
+            expect(logger).toBe(initialLogger); // Back to initial state
             expect(location).toBeNull();
+            
+            // Second cycle
             cleanup = initCore(locationMock, { hashMode: 'multi' });
             expect(routingOptions.hashMode).toBe('multi');
             expect(location).toBeDefined();
 
-            // Act.
+            // Act - Final cleanup
             cleanup();
             cleanup = undefined;
 
-            // Assert.
-            expect(routingOptions.hashMode).toBe('single');
+            // Assert - Should revert to library defaults
+            expect(routingOptions.hashMode).toBe(defaultRoutingOptions.hashMode);
             expect(location).toBeNull();
         });
     });

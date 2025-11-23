@@ -28,6 +28,12 @@ export function setRoutingOptions(options?: Partial<ExtendedRoutingOptions>): vo
     routingOptions.disallowPathRouting = options?.disallowPathRouting ?? routingOptions.disallowPathRouting;
     routingOptions.disallowHashRouting = options?.disallowHashRouting ?? routingOptions.disallowHashRouting;
     routingOptions.disallowMultiHashRouting = options?.disallowMultiHashRouting ?? routingOptions.disallowMultiHashRouting;
+    if (routingOptions.hashMode === 'single' && typeof routingOptions.defaultHash === 'string') {
+        throw new Error("Using a named hash path as the default path can only be done when 'hashMode' is set to 'multi'.");
+    }
+    else if (routingOptions.hashMode === 'multi' && routingOptions.defaultHash === true) {
+        throw new Error("Using classic hash routing as default can only be done when 'hashMode' is set to 'single'.");
+    }
 }
 
 /**
