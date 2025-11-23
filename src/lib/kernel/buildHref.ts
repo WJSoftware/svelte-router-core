@@ -11,7 +11,7 @@ import { mergeQueryParams } from "./preserveQuery.js";
  * ### When to Use
  * 
  * This is a helper function that came to be when the redirection feature was added to the library.  The specific use 
- * case is cross-routing-universe redirections, where the "source" universe's path is not changed by normal redireciton 
+ * case is cross-routing-universe redirections, where the "source" universe's path is not changed by normal redirection 
  * because "normal" **cross-universe redirections** don't alter other universes' paths.
  * 
  * This function, in conjunction with the `calculateHref` function, allows relatively easy construction of the desired
