@@ -22,6 +22,10 @@ export class LocationState {
 
     /**
      * Normalizes state data to ensure it conforms to the expected State interface.
+     * 
+     * **NOTE**:  In order to avoid serialization errors of the provided data, which might contain reactive Svelte 
+     * proxies, the returned data is a clean snapshot of the normalized data.
+     * 
      * @param state The state to normalize
      * @param defaultState Optional default state to use if normalization is needed
      * @returns Normalized state that conforms to the State interface
@@ -34,6 +38,6 @@ export class LocationState {
             logger.warn(`Non-conformant state data detected. ${action}`);
         }
         
-        return validState ? state : (defaultState ?? { path: undefined, hash: {} });
+        return $state.snapshot(validState ? state : (defaultState ?? { path: undefined, hash: {} }));
     }
 }
