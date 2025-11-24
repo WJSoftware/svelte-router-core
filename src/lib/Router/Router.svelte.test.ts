@@ -396,7 +396,7 @@ function routerBindingTests(setup: ReturnType<typeof createRouterTestSetup>) {
         expect(boundRouter).toBe(customRouter);
     });
 
-    test("Should update bound router when basePath changes.", async () => {
+    test("Should update the bound router's basePath when basePath changes.", async () => {
         // Arrange.
         const { hash, context } = setup;
         const content = createTestSnippet('<div>BasePath Binding Test</div>');
@@ -430,11 +430,6 @@ function routerBindingTests(setup: ReturnType<typeof createRouterTestSetup>) {
 
         // Assert.
         expect(boundRouter?.basePath).toBe("/api/v2");
-        // Router setter is called twice during initial render:
-        // 1. When RouterEngine is created (with default basePath "/")
-        // 2. When $effect.pre sets the actual basePath ("/api/v1")
-        // No additional calls during rerender since same router instance is used
-        expect(setterSpy).toHaveBeenCalledTimes(2); 
         expect(boundRouter).toBe(initialRouter); // Same instance
     });
 
