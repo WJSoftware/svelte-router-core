@@ -1,7 +1,9 @@
 <script lang="ts">
-	import type { HTMLAttributes } from 'svelte/elements';
+	import type { ClassValue, HTMLAttributes } from 'svelte/elements';
 	import Highlight, { type LanguageType } from 'svelte-highlight';
-	import 'svelte-highlight/styles/github.css';
+	import 'svelte-highlight/styles/atelier-dune-light.css';
+	// import 'svelte-highlight/styles/github.css';
+	import { clsx } from 'clsx';
 
 	interface Props extends HTMLAttributes<HTMLDivElement> {
 		language: LanguageType<string>;
@@ -13,6 +15,24 @@
 	let { language, code, title, copyable = true, class: cssClass, ...restProps }: Props = $props();
 
 	let copied = $state(false);
+	let codeNode = $state<HTMLElement | null>(null);
+
+	$effect(() => {
+		const root = codeNode?.querySelector('.hljs');
+		if (!root) return;
+		styleDirectTextChildren(root, 'orphan-text-node');
+	});
+
+	function styleDirectTextChildren(root: Node, cssClass: ClassValue) {
+		for (const node of root.childNodes) {
+			if (node.nodeType === Node.TEXT_NODE && node.nodeValue?.trim()) {
+				const span = document.createElement('span');
+				span.textContent = node.nodeValue;
+				span.classList.add(clsx(cssClass));
+				root.replaceChild(span, node);
+			}
+		}
+	}
 
 	async function copyToClipboard() {
 		try {
@@ -49,36 +69,10 @@
 			{/if}
 		</div>
 	{/if}
-	<div class="code-snippet-content">
+	<div bind:this={codeNode} class="code-snippet-content">
 		<Highlight {language} {code} />
 	</div>
 </div>
-
-<!--
-@component
-# CodeSnippet
-A syntax-highlighted code block with optional title and copy functionality.
-
-## Props
-- `language` (LanguageType): The language for syntax highlighting
-- `code` (string): The code content to display
-- `title` (string, optional): Optional title for the code snippet
-- `copyable` (boolean, default: true): Whether to show the copy button
-
-## Usage
-```svelte
-<script>
-    import CodeSnippet from './lib/CodeSnippet.svelte';
-    import typescript from "svelte-highlight/languages/typescript";
-</script>
-
-<CodeSnippet 
-    language={typescript}
-    code="console.log('Hello, world!');"
-    title="Example"
-/>
-```
--->
 
 <style>
 	.code-snippet {
@@ -97,6 +91,10 @@ A syntax-highlighted code block with optional title and copy functionality.
 		background-color: var(--bs-light);
 		border-bottom: 1px solid var(--bs-border-color);
 		font-size: 0.875rem;
+	}
+
+	:global([data-bs-theme='dark']) .code-snippet-header {
+		background-color: var(--bs-gray-800);
 	}
 
 	.code-snippet-title {
@@ -134,8 +132,11 @@ A syntax-highlighted code block with optional title and copy functionality.
 	/* Dark mode support */
 	@media (prefers-color-scheme: dark) {
 		.code-snippet-header {
-			background-color: var(--bs-dark);
-			border-bottom-color: var(--bs-secondary);
+			background-color: var(--bs-gray-800);
 		}
+	}
+
+	:global .orphan-text-node {
+		color: var(--bs-body-color);
 	}
 </style>

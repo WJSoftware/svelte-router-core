@@ -2,13 +2,26 @@
 	import './app.scss';
 	import NavBar from './lib/NavBar.svelte';
 	import Tooltip from './lib/Tooltip.svelte';
-	import { Router, Route, Fallback, RouterTrace, activeBehavior } from '@svelte-router/core';
+	import { Router, Route, Fallback, RouterTrace, Redirector } from '@svelte-router/core';
 	import NotFound from './lib/NotFound.svelte';
 	import HomeView from './lib/views/home/HomeView.svelte';
 	import PathRoutingView from './lib/views/path-routing/PathRoutingView.svelte';
 	import HashRoutingView from './lib/views/hash-routing/HashRoutingView.svelte';
+	import DemoBc from './lib/DemoBc.svelte';
+	import { initTitleContext } from './lib/state/title.svelte';
+	import HrInCodeView from './lib/views/hash-routing/InCodeView.svelte';
+	import RedirectedView from './lib/views/redirected/RedirectedView.svelte';
 
+	initTitleContext();
 	let showNavTooltip = $state(false);
+	const redirector = new Redirector();
+	redirector.redirections.push({
+		pattern: '/deprecated-path',
+		href: '/new-path',
+		options: {
+			state: { redirected: true },
+		}
+	});
 
 	// Show tooltip after a short delay when app loads
 	$effect(() => {
@@ -39,21 +52,7 @@
 						{/snippet}
 						Use these navigation links to test-drive the routing capabilities of @svelte-router/core.
 					</Tooltip>
-					<div class="breadcrumb">
-						<span>
-							<span {@attach activeBehavior(rs, { key: 'home', class: 'bc-active' })}>Home</span>
-						</span>
-						<span>
-							<span {@attach activeBehavior(rs, { key: 'pathRouting', class: 'bc-active' })}
-								>Path Routing</span
-							>
-						</span>
-						<span>
-							<span {@attach activeBehavior(rs, { key: 'hashRouting', class: 'bc-active' })}
-								>Hash Routing</span
-							>
-						</span>
-					</div>
+					<DemoBc {rs} />
 				</header>
 				<main class="d-flex flex-column flex-fill overflow-auto mt-3">
 					<div class="container-fluid flex-fill d-flex flex-column">
@@ -67,6 +66,12 @@
 							<Route key="hashRouting" path="/hash-routing">
 								<HashRoutingView basePath="/hash-routing" />
 							</Route>
+							<Route key="hr-in-code" path="/hash-routing/in-code">
+								<HrInCodeView />
+							</Route>
+							<Route key="redirected" path="/new-path">
+								<RedirectedView />
+							</Route>
 							<Fallback>
 								<NotFound />
 							</Fallback>
@@ -74,7 +79,9 @@
 					</div>
 				</main>
 				{#if !rs.home.match}
-					<RouterTrace />
+					<div class="table-responsive-lg">
+						<RouterTrace class="table table-striped table-hover" />
+					</div>
 				{/if}
 			{/snippet}
 		</Router>
@@ -106,28 +113,5 @@
 				background-color: var(--bg-color);
 			}
 		}
-	}
-	.breadcrumb {
-		padding: 0.5em 1em;
-		background-color: #f8f9fa;
-		border-bottom: 1px solid #dee2e6;
-		font-size: 0.9em;
-		display: flex;
-		flex-direction: row;
-		gap: 0.5em;
-		& > *:after {
-			content: '>';
-			flex-grow: 1;
-			margin-left: 0.5em;
-		}
-		& > *:last-child:after {
-			content: '';
-			flex-grow: 0;
-			margin-left: 0;
-		}
-	}
-	:global .bc-active {
-		font-weight: bold;
-		text-decoration: underline;
 	}
 </style>

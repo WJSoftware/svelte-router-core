@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { Link, LinkContext, Route } from '@svelte-router/core';
 	import logo from '@svelte-router/core/logo64';
-	import SubNav from './SubNav.svelte';
+	import SubNav, { type LinkItem } from './SubNav.svelte';
 	import { routingMode } from './hash-routing';
 	import type { HTMLAttributes } from 'svelte/elements';
+	import ThemeSwitch from './ThemeSwitch.svelte';
 
 	let { ...restProps }: HTMLAttributes<HTMLElement> = $props();
 
@@ -11,12 +12,18 @@
 		{ text: 'Home', href: '/path-routing' },
 		{ text: 'Start Demo', href: '/path-routing/demo' }
 	];
-	const hashRoutingLinks = [
+	const hashRoutingLinks: LinkItem[] = [
 		{ text: 'Home', href: '/hash-routing' },
 		{
 			text: 'Start Demo',
 			href: `#${routingMode === 'multi' ? 'd1=/demo;d2=/demo' : '/demo'}`
-		}
+		},
+		{
+			text: 'In Code',
+			href: '/hash-routing/in-code',
+			activeFor: 'hr-in-code',
+			activeState: { class: 'active', aria: { 'aria-current': 'page' } }
+		},
 	];
 </script>
 
@@ -24,7 +31,7 @@
 	<div class="container-fluid">
 		<Link class="navbar-brand fw-bold" href="/" id="logoLink">
 			<img src={logo} alt="N-Savant Compass Logo" style:height="1.7em" />
-			@svelte-router/core
+			webJose's Svelte Router
 		</Link>
 		<button
 			class="navbar-toggler"
@@ -38,7 +45,7 @@
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<div class="collapse navbar-collapse" id="navbarNav">
-			<LinkContext activeState={{ class: 'active', aria: { 'aria-current': 'page' } }}>
+			<LinkContext activeState={{ class: 'active', aria: { current: 'page' } }}>
 				<ul class="navbar-nav">
 					<li class="nav-item">
 						<Link class="nav-link" activeFor="home" href="/" id="homeLink">Home</Link>
@@ -75,12 +82,21 @@
 						<Link class="nav-link" activeFor="pricing" href="/pricing">404</Link>
 					</li>
 					<li class="nav-item">
+						<Link class="nav-link" href="/deprecated-path">Deprecated Link</Link>
+					</li>
+					<li class="nav-item">
+						<Link class="nav-link" activeFor="redirected" href="/new-path">New Link</Link>
+					</li>
+					<li class="nav-item">
 						<Link class="nav-link disabled" href="/disabled" tabindex={-1} aria-disabled="true">
 							Disabled
 						</Link>
 					</li>
 				</ul>
 			</LinkContext>
+			<div class="ms-auto">
+				<ThemeSwitch />
+			</div>
 		</div>
 	</div>
 </nav>

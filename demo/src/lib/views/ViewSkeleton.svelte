@@ -21,4 +21,6 @@
 <svelte:element this={tag} class={["flex-fill overflow-auto", cssClass]} {...restProps}>
     {@render children?.()}
 </svelte:element>
-<RouterTrace {hash} />
+<div class="table-responsive-lg">
+    <RouterTrace {hash} class="table table-striped table-hover" />
+</div>

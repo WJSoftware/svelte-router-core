@@ -41,7 +41,9 @@
 				</Route>
 			</div>
 			<div class="col-xl-8">
-				<RouterTrace {hash} />
+				<div class="table-responsive-lg">
+					<RouterTrace {hash} class="table table-striped table-hover" />
+				</div>
 			</div>
 		</div>
 	</div>
