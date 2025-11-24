@@ -34,46 +34,6 @@
 	</Router>
 {/snippet}
 
-<!-- Interactive Demo Section -->
-<div class="row mt-5">
-	<div class="col-lg-8 offset-lg-2">
-		<Card border="dark">
-			<CardHeader background="dark" textColor="white" class="text-center" tag="h3">
-				🎮 Interactive Demo
-			</CardHeader>
-			<CardBody class="text-center">
-				<div class="mb-4">
-					<Badge
-						background={routingMode === 'single' ? 'primary' : 'success'}
-						class="fs-6 px-3 py-2"
-					>
-						Current Mode: <code class="text-white">{routingMode}</code>
-					</Badge>
-				</div>
-				<p class="lead">Experience the difference between single and multi-hash routing modes!</p>
-				<p>
-					Currently in <strong>{routingMode}</strong> mode.
-					{#if routingMode === 'single'}
-						The entire hash value represents one route.
-					{:else}
-						The hash contains multiple key/value pairs for independent routers.
-					{/if}
-				</p>
-				<button
-					type="button"
-					class="btn btn-lg btn-{routingMode === 'single' ? 'success' : 'primary'}"
-					onclick={() => toggleRoutingMode()}
-				>
-					🔄 Switch to {routingMode === 'single' ? 'Multi' : 'Single'} Mode
-				</button>
-				<div class="mt-3">
-					<small class="text-muted"> ⚠️ Note: The page will reload to apply the new mode. </small>
-				</div>
-			</CardBody>
-		</Card>
-	</div>
-</div>
-
 <!-- Live Demo -->
 <div class="mt-5">
 	<h2 class="text-center mb-4">🎪 Live Demo</h2>
@@ -153,6 +113,46 @@
 			</div>
 		</div>
 	{/if}
+</div>
+
+<!-- Interactive Demo Section -->
+<div class="row mt-5">
+	<div class="col-lg-8 offset-lg-2">
+		<Card border="dark">
+			<CardHeader background="dark" textColor="white" class="text-center" tag="h3">
+				🎮 Interactive Demo
+			</CardHeader>
+			<CardBody class="text-center">
+				<div class="mb-4">
+					<Badge
+						background={routingMode === 'single' ? 'primary' : 'success'}
+						class="fs-6 px-3 py-2"
+					>
+						Current Mode: <code class="text-white">{routingMode}</code>
+					</Badge>
+				</div>
+				<p class="lead">Experience the difference between single and multi-hash routing modes!</p>
+				<p>
+					Currently in <strong>{routingMode}</strong> mode.
+					{#if routingMode === 'single'}
+						The entire hash value represents one route.
+					{:else}
+						The hash contains multiple key/value pairs for independent routers.
+					{/if}
+				</p>
+				<button
+					type="button"
+					class="btn btn-lg btn-{routingMode === 'single' ? 'success' : 'primary'}"
+					onclick={() => toggleRoutingMode()}
+				>
+					🔄 Switch to {routingMode === 'single' ? 'Multi' : 'Single'} Mode
+				</button>
+				<div class="mt-3">
+					<small class="text-muted"> ⚠️ Note: The page will reload to apply the new mode. </small>
+				</div>
+			</CardBody>
+		</Card>
+	</div>
 </div>
 
 <!-- Code Modal -->

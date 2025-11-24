@@ -2,6 +2,8 @@
 	export type LinkItem = {
 		href: string;
 		text: string;
+		activeFor?: string;
+		activeState?: ActiveState;
 	};
 </script>
 
@@ -26,7 +28,7 @@
 		</li>
 		{#each links as link}
 			<li class="nav-item">
-				<Link class="nav-link" href={link.href}>
+				<Link class="nav-link" href={link.href} activeFor={link.activeFor} activeState={link.activeState}>
 					{link.text}
 				</Link>
 			</li>
@@ -41,7 +43,18 @@
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 	}
     .sub-nav * {
-        /* word-break: keep-all; */
+		/* word-break: keep-all; */
         text-wrap: nowrap;
     }
+	:global([data-bs-theme=dark]) .sub-nav {
+		background-color: rgba(0, 0, 0, 0.09);
+		box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+	}
+	
+	@media (prefers-color-scheme: dark) {
+		.sub-nav {
+			background-color: rgba(0, 0, 0, 0.09);
+			box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+		}
+	}
 </style>

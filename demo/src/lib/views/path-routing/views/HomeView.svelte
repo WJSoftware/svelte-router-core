@@ -5,6 +5,7 @@
 	import CardBody from '../../../CardBody.svelte';
 	import xml from 'svelte-highlight/languages/xml';
 	import typescript from 'svelte-highlight/languages/typescript';
+	import { getTitleContext } from '../../../state/title.svelte';
 
 	// Import code samples as raw text
 	import basicPathRouterCode from '../code-samples/basic-path-router.txt?raw';
@@ -13,6 +14,8 @@
 	import routeParametersCode from '../code-samples/route-parameters.txt?raw';
 	import urlExamples from '../code-samples/url-examples.ts?raw';
 	import routeGuardsCode from '../code-samples/route-guards.txt?raw';
+
+	getTitleContext().current = 'Path Routing';
 </script>
 
 <div class="container">
