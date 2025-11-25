@@ -95,11 +95,26 @@ export class Redirector {
     #routePatterns = $derived.by(() => this.redirections.map((url) => this.#routeHelper.parseRoutePattern(url)));
     /**
      * Initializes a new instance of this class.
-     * @param hash Resolved hash value that will be used for route testing and navigation if no navigation-specific 
-     * hash value is provided via the redirection options.
+     * @param hash Hash value that will be used for route testing and navigation if no navigation-specific hash value 
+     * is provided via the redirection options.
      * @param options Redirector options.
      */
-    constructor(hash?: Hash | undefined, options?: RedirectorOptions) {
+    constructor(hash?: Hash | undefined, options?: RedirectorOptions);
+    /**
+     * Initializes a new instance of this class that monitors the default routing universe specified during library 
+     * initialization.
+     * @param options Redirector options.
+     */
+    constructor(options: RedirectorOptions);
+    constructor(hashOrOptions?: Hash | RedirectorOptions, optionsArg?: RedirectorOptions) {
+        let hash: Hash | undefined;
+        let options: RedirectorOptions | undefined;
+        if (typeof hashOrOptions === 'object') {
+            options = hashOrOptions;
+        } else {
+            hash = hashOrOptions;
+            options = optionsArg;
+        }
         this.#options = { ...defaultRedirectorOptions, ...options };
         this.#hash = resolveHashValue(hash);
         this.redirections = $state<RedirectedRouteInfo[]>([]);

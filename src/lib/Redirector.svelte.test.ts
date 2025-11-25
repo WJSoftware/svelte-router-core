@@ -241,6 +241,191 @@ ROUTING_UNIVERSES.forEach((universe) => {
             expect(navigateSpy).toHaveBeenCalledTimes(1);
             expect(ruPath()).toBe('/punch-line');
         });
+
+        describe("Constructor Signatures", () => {
+            test("Should work with explicit hash constructor (hash, options).", () => {
+                // Arrange.
+                location.navigate('/explicit-hash', { hash: universe.hash });
+                navigateSpy.mockClear();
+
+                // Act.
+                const redirector = new Redirector(universe.hash, { replace: false });
+                redirector.redirections.push({
+                    pattern: '/explicit-hash',
+                    href: '/redirected-explicit'
+                });
+                flushSync();
+
+                // Assert.
+                expect(navigateSpy).toHaveBeenCalledWith('/redirected-explicit', expect.objectContaining({
+                    hash: resolvedHash,
+                    replace: false
+                }));
+                expect(ruPath()).toBe('/redirected-explicit');
+            });
+
+            test("Should resolve hash correctly when using explicit constructor.", () => {
+                // This test works for all universes
+                // Arrange.
+                location.navigate('/hash-resolution-test', { hash: universe.hash });
+                navigateSpy.mockClear();
+
+                // Act.
+                const redirector = new Redirector(universe.hash, { replace: true });
+                redirector.redirections.push({
+                    pattern: '/hash-resolution-test',
+                    href: '/hash-resolved'
+                });
+                flushSync();
+
+                // Assert.
+                expect(navigateSpy).toHaveBeenCalledWith('/hash-resolved', expect.objectContaining({
+                    hash: resolvedHash // Should match the explicitly provided hash
+                }));
+                expect(ruPath()).toBe('/hash-resolved');
+            });
+        });
+
+        describe("Options-Only Constructor", () => {
+            // Only test the options-only constructor for universes that have a defaultHash
+            // The options-only constructor is designed to work with the "default routing universe"
+            
+            if (universe.defaultHash !== undefined) {
+                test("Should work with default hash constructor (options only).", () => {
+                    // Arrange.
+                    location.navigate('/default-hash', { hash: universe.hash });
+                    navigateSpy.mockClear();
+
+                    // Act.
+                    const redirector = new Redirector({ replace: false });
+                    redirector.redirections.push({
+                        pattern: '/default-hash',
+                        href: '/redirected-default'
+                    });
+                    flushSync();
+
+                    // Assert.
+                    expect(navigateSpy).toHaveBeenCalledWith('/redirected-default', expect.objectContaining({
+                        hash: resolveHashValue(undefined), // Should use the library's defaultHash
+                        replace: false
+                    }));
+                });
+
+                test("Should work with minimal options-only constructor.", () => {
+                    // Arrange.
+                    location.navigate('/minimal-options', { hash: universe.hash });
+                    navigateSpy.mockClear();
+
+                    // Act.
+                    const redirector = new Redirector({}); // Empty options object
+                    redirector.redirections.push({
+                        pattern: '/minimal-options',
+                        href: '/redirected-minimal'
+                    });
+                    flushSync();
+
+                    // Assert.
+                    expect(navigateSpy).toHaveBeenCalledWith('/redirected-minimal', expect.objectContaining({
+                        hash: resolveHashValue(undefined), // Should use the library's defaultHash
+                        replace: true // Should use default replace: true
+                    }));
+                });
+            } else {
+                test("Should skip options-only constructor tests for explicit hash universes.", () => {
+                    // These universes (PR, HR, MHR) use explicit hash values and don't set a defaultHash
+                    // The options-only constructor wouldn't work correctly here since it relies on
+                    // the library's defaultHash matching the universe being tested
+                    expect(universe.text).toMatch(/^(PR|HR|MHR)$/);
+                });
+            }
+        });
+    });
+});
+
+describe("Options-Only Constructor with Matching Library Defaults", () => {
+    // Test the options-only constructor when the library is properly initialized 
+    // with matching defaultHash values for HR and MHR scenarios
+    
+    describe("Hash Routing Universe", () => {
+        let cleanup: () => void;
+        let navigateSpy: MockInstance<typeof location.navigate>;
+        
+        beforeAll(() => {
+            // Initialize library with hash routing as default
+            cleanup = init({ defaultHash: true });
+            navigateSpy = vi.spyOn(location, 'navigate');
+        });
+        
+        afterAll(() => {
+            cleanup();
+        });
+        
+        afterEach(() => {
+            location.goTo('/');
+            vi.clearAllMocks();
+        });
+        
+        test("Should work with options-only constructor when library default matches hash routing.", () => {
+            // Arrange.
+            location.navigate('/hash-default-test', { hash: true });
+            navigateSpy.mockClear();
+
+            // Act.
+            const redirector = new Redirector({ replace: false });
+            redirector.redirections.push({
+                pattern: '/hash-default-test',
+                href: '/hash-redirected'
+            });
+            flushSync();
+
+            // Assert.
+            expect(navigateSpy).toHaveBeenCalledWith('/hash-redirected', expect.objectContaining({
+                hash: true, // Should use the library's defaultHash (true)
+                replace: false
+            }));
+            expect(location.hashPaths.single).toBe('/hash-redirected');
+        });
+    });
+    
+    describe("Multi-Hash Routing Universe", () => {
+        let cleanup: () => void;
+        let navigateSpy: MockInstance<typeof location.navigate>;
+        
+        beforeAll(() => {
+            // Initialize library with multi-hash routing as default
+            cleanup = init({ defaultHash: 'p1', hashMode: 'multi' });
+            navigateSpy = vi.spyOn(location, 'navigate');
+        });
+        
+        afterAll(() => {
+            cleanup();
+        });
+        
+        afterEach(() => {
+            location.goTo('/');
+            vi.clearAllMocks();
+        });
+        
+        test("Should work with options-only constructor when library default matches multi-hash routing.", () => {
+            // Arrange.
+            location.navigate('/multi-hash-default-test', { hash: 'p1' });
+            navigateSpy.mockClear();
+
+            // Act.
+            const redirector = new Redirector({ replace: false });
+            redirector.redirections.push({
+                pattern: '/multi-hash-default-test',
+                href: '/multi-hash-redirected'
+            });
+            flushSync();
+
+            // Assert.
+            expect(navigateSpy).toHaveBeenCalledWith('/multi-hash-redirected', expect.objectContaining({
+                hash: 'p1', // Should use the library's defaultHash ('p1')
+                replace: false
+            }));
+            expect(location.hashPaths.p1).toBe('/multi-hash-redirected');
+        });
     });
 });
 
