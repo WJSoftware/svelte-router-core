@@ -2,12 +2,16 @@
 	import { location } from '@svelte-router/core';
 	import Alert from '../../Alert.svelte';
 	import { getTitleContext } from '../../state/title.svelte';
+	import { routingMode } from '../../hash-routing';
 
 	getTitleContext().current = 'New Feature (Redirector Demo)';
+	const redirectedHash = routingMode === 'multi' ? 'redir' : true;
+	const redirected = !!location.getState(redirectedHash)?.redirected;
+	location.navigate('', { hash: redirectedHash, state: undefined, replace: true });
 </script>
 
 <article class="container">
-	{#if location.getState(false)?.redirected}
+	{#if redirected}
 		<Alert background="warning">
 			You have been redirected here from a deprecated path. Please update your bookmarks!
 		</Alert>

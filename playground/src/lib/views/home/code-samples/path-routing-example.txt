@@ -3,8 +3,8 @@
     <HomePage />
   </Route>
   <Route key="profile" path="/user/:id">
-    {#snippet children(params)}
-      <UserProfile userId={params.id} />
+    {#snippet children({ rp })}
+      <UserProfile userId={rp?.id} />
     {/snippet}
   </Route>
 </Router>

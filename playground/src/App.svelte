@@ -2,7 +2,16 @@
 	import './app.scss';
 	import NavBar from './lib/NavBar.svelte';
 	import Tooltip from './lib/Tooltip.svelte';
-	import { Router, Route, Fallback, RouterTrace, Redirector } from '@svelte-router/core';
+	import {
+		Router,
+		Route,
+		Fallback,
+		RouterTrace,
+		Redirector,
+		location,
+		buildHref
+	} from '@svelte-router/core';
+	import { calculateHref, calculateState } from '@svelte-router/core/kernel';
 	import NotFound from './lib/NotFound.svelte';
 	import HomeView from './lib/views/home/HomeView.svelte';
 	import PathRoutingView from './lib/views/path-routing/PathRoutingView.svelte';
@@ -11,16 +20,23 @@
 	import { initTitleContext } from './lib/state/title.svelte';
 	import HrInCodeView from './lib/views/hash-routing/InCodeView.svelte';
 	import RedirectedView from './lib/views/redirected/RedirectedView.svelte';
+	import { routingMode } from './lib/hash-routing';
 
 	initTitleContext();
 	let showNavTooltip = $state(false);
+	const redirectedHash = routingMode === 'multi' ? 'redir' : true;
 	const redirector = new Redirector();
 	redirector.redirections.push({
 		pattern: '/deprecated-path',
-		href: '/new-path',
+		href: () => {
+			const pathnamePiece = calculateHref({ hash: false }, '/feat');
+			const hashPiece = calculateHref({ hash: redirectedHash }, '/new-path');
+			return buildHref(pathnamePiece, hashPiece);
+		},
 		options: {
-			state: { redirected: true },
-		}
+			state: calculateState(redirectedHash, { redirected: true })
+		},
+		goTo: true
 	});
 
 	// Show tooltip after a short delay when app loads
@@ -44,7 +60,7 @@
 <div class="app">
 	<div class="d-flex flex-column h-100">
 		<Router id="root">
-			{#snippet children(_, rs)}
+			{#snippet children({ rs })}
 				<header>
 					<Tooltip shown={showNavTooltip} placement="bottom">
 						{#snippet reference(ref)}
@@ -69,10 +85,12 @@
 							<Route key="hr-in-code" path="/hash-routing/in-code">
 								<HrInCodeView />
 							</Route>
-							<Route key="redirected" path="/new-path">
-								<RedirectedView />
-							</Route>
-							<Fallback>
+							<Router hash={redirectedHash} id="redirector-router">
+								<Route hash={redirectedHash} key="redirected" path="/new-path">
+									<RedirectedView />
+								</Route>
+							</Router>
+							<Fallback when={(_, nm) => nm && !location.path.startsWith('/feat')}>
 								<NotFound />
 							</Fallback>
 						</div>

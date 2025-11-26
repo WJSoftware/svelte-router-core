@@ -25,6 +25,7 @@
 			activeState: { class: 'active', aria: { current: 'page' } }
 		},
 	];
+	const redirectedHash = routingMode === 'multi' ? 'redir' : true;
 </script>
 
 <nav class="navbar navbar-expand-lg bg-primary-subtle" {...restProps}>
@@ -51,7 +52,7 @@
 						<Link class="nav-link" activeFor="home" href="/" id="homeLink">Home</Link>
 					</li>
 					<Route key="homeMenuPr">
-						{#snippet children(rp, _, rs)}
+						{#snippet children({ rs })}
 							{#if !rs.pathRouting?.match}
 								<li class="nav-item">
 									<Link class="nav-link" activeFor="pathRouting" href="/path-routing">
@@ -65,7 +66,7 @@
 						<SubNav title="Path Routing" links={pathRoutingLinks} />
 					</Route>
 					<Route key="homeMenuHr">
-						{#snippet children(rp, _, rs)}
+						{#snippet children({ rs })}
 							{#if !rs.hashRouting?.match}
 								<li class="nav-item">
 									<Link class="nav-link" activeFor="hashRouting" href="/hash-routing">
@@ -85,7 +86,13 @@
 						<Link class="nav-link" href="/deprecated-path">Deprecated Link</Link>
 					</li>
 					<li class="nav-item">
-						<Link class="nav-link" activeFor="redirected" href="/new-path">New Link</Link>
+						<Link
+							class="nav-link"
+							activeFor="redirected"
+							href="/feat{routingMode === 'multi' ? '#redir=/new-path' : '#/new-path'}"
+						>
+							New Link
+						</Link>
 					</li>
 					<li class="nav-item">
 						<Link class="nav-link disabled" href="/disabled" tabindex={-1} aria-disabled="true">

@@ -1,23 +1,23 @@
 <!-- Route with single parameter -->
 <Route key="user" path="/user/:id">
-  {#snippet children(params)}
-    <h1>User ID: {params.id}</h1>
+  {#snippet children({ rp })}
+    <h1>User ID: {rp?.id}</h1>
   {/snippet}
 </Route>
 
 <!-- Route with multiple parameters -->
 <Route key="post" path="/blog/:category/:slug">
-  {#snippet children(params)}
+  {#snippet children({ rp })}
     <BlogPost 
-      category={params.category} 
-      slug={params.slug} 
+      category={rp?.category} 
+      slug={rp?.slug} 
     />
   {/snippet}
 </Route>
 
 <!-- Route with rest parameter (catch-all) -->
 <Route key="files" path="/files/*">
-  {#snippet children(params)}
-    <FileExplorer path={params.rest} />
+  {#snippet children({ rp })}
+    <FileExplorer path={rp?.rest} />
   {/snippet}
 </Route>
