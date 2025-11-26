@@ -10,8 +10,8 @@ children via context.
 | `router` | `RouterEngine` | `undefined` | Yes | Gets or sets the router engine instance to be used by this router. |
 | `basePath` | `string` | `'/'` | | Sets the router's base path, which is a segment of the URL that is implicitly added to all routes. |
 | `id` | `string` | `undefined` | | Gives the router an identifier that shows up in `RouterTrace` components. |
-| `hash` | `boolean \| string` | `undefined` | | Sets the hash mode of the router. |
-| `children` | `Snippet<[any, Record<string, RouteStatus>]>` | `undefined` | | Renders the children of the router. |
+| `hash` | `Hash` | `undefined` | | Sets the hash mode of the router. |
+| `children` | `Snippet<[RouterChildrenContext]>` | `undefined` | | Renders the children of the router. |
 
 [Online Documentation](https://wjfe-n-savant.hashnode.space/wjfe-n-savant/components/router)
 
@@ -27,13 +27,13 @@ Simplest form of use.
 </script>
 
 <Router>
-  <Route path="/home">
+  <Route key="home" path="/home">
     <h1>Welcome to the home page!</h1>
   </Route>
-  <Route path="/about">
+  <Route key="about" path="/about">
     <h1>About Us</h1>
   </Route>
-  <Route path="/contact">
+  <Route key="contact" path="/contact">
     <h1>Contact Us</h1>
   </Route>
 </Router>
@@ -65,22 +65,22 @@ as needed.
 </script>
 
 <Router basePath="/root">
-  <Route path="/home">
+  <Route key="home" path="/home">
     <h1>Welcome to the home page!</h1>
     <p>The Route component matched /root/home.</p>
   </Route>
-  <Route path="/about">
+  <Route key="about" path="/about">
     <h1>About Us</h1>
   </Route>
-  <Route path="/contact">
+  <Route key="contact" path="/contact">
     <h1>Contact Us</h1>
   </Route>
   <Router basePath="/admin">
-    <Route path="/dashboard">
+    <Route key="dashboard" path="/dashboard">
       <h1>Admin Dashboard</h1>
       <p>The Route component matched /root/admin/dashboard.</p>
     </Route>
-    <Route path="/users">
+    <Route key="users" path="/users">
       <h1>Admin Users</h1>
     </Route>
   </Router>
@@ -89,26 +89,26 @@ as needed.
 
 ### Fallback Content
 
-Use the `fallback()` snippet of the router to present content when no routes match.
+Use the `Fallback` component to present content when no routes match.
 
 ```svelte
 <script lang="ts">
-  import { Router, Route } from '@svelte-router/core';
+  import { Router, Route, Fallback } from '@svelte-router/core';
 </script>
 
 <Router>
-  <Route path="/home">
+  <Route key="home" path="/home">
     <h1>Welcome to the home page!</h1>
   </Route>
-  <Route path="/about">
+  <Route key="about" path="/about">
     <h1>About Us</h1>
   </Route>
-  <Route path="/contact">
+  <Route key="contact" path="/contact">
     <h1>Contact Us</h1>
   </Route>
-  {#snippet fallback()}
+  <Fallback>
     <h1>404 Not Found</h1>
-  {/snippet}
+  </Fallback>
 </Router>
 ```
 
@@ -125,10 +125,10 @@ Parameters are expressed in the form `:<name>[?]`.  The optional `"?"` makes the
 
 <Router>
   <Route path="/user/:id/:detailed?">
-    {#snippet children(params)}
-      <UserProfile id={params.id} />
-      {#if params.detailed}
-        <UserDetails id={params.id} />
+    {#snippet children({ rp })}
+      <UserProfile id={rp?.id} />
+      {#if rp?.detailed}
+        <UserDetails id={rp?.id} />
       {/if}
     {/snippet}
   </Route>
@@ -143,11 +143,14 @@ never use this name as a name for one of your parameters.
 ```svelte
 <script lang="ts">
   import { Router, Route } from '@svelte-router/core';
+  import OtherDashboard from '$lib/components/other-dashboard.svelte';
 </script>
 
 <Router>
-  <Route path="/dashboard/*">
-    ...
+  <Route key="dashboard" path="/dashboard/*">
+    {#snippet children({ rp })}
+      <OtherDashboard path={rp?.rest} />
+    {/snippet}
   </Route>
 </Router>
 ```

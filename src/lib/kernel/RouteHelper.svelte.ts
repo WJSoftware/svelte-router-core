@@ -1,5 +1,5 @@
 import { joinPaths } from "$lib/public-utils.js";
-import type { AndUntyped, Hash, PatternRouteInfo, RouteStatus } from "$lib/types.js";
+import type { AndUntyped, Hash, PatternRouteInfo, RouteParamsRecord } from "$lib/types.js";
 import { noTrailingSlash } from "$lib/utils.js";
 import { location } from "./Location.js";
 
@@ -81,7 +81,7 @@ export class RouteHelper {
      */
     testRoute(routeMatchInfo: { regex?: RegExp; and?: AndUntyped; }) {
         const matches = routeMatchInfo.regex ? routeMatchInfo.regex.exec(this.testPath) : null;
-        const routeParams = matches?.groups ? { ...matches.groups } as RouteStatus['routeParams'] : undefined;
+        const routeParams = matches?.groups ? { ...matches.groups } as RouteParamsRecord : undefined;
         if (routeParams) {
             for (let key in routeParams) {
                 if (routeParams[key] === undefined) {

@@ -47,13 +47,78 @@ export type RouteStatus = {
      * 
      * This is only available if the route has matched.
      */
-    routeParams?: Record<string, ParameterValue>;
+    routeParams?: RouteParamsRecord;
 }
+
+/**
+ * Resolves the parameter name from potentially optional parameters.
+ */
+export type ParamName<T> = T extends `${infer P}?` ? P : T;
+
+/**
+ * Extracts the parameters from a route pattern.
+ */
+export type RouteParameters<T> = T extends string
+    ? T extends `${string}:${infer Param}/${infer Rest}`
+    ? ParamName<Param> | RouteParameters<Rest>
+    : T extends `${string}:${infer Param}`
+    ? ParamName<Param>
+    : T extends `${string}/*`
+    ? 'rest'
+    : T extends '*'
+    ? 'rest'
+    : never
+    : string;
+
+/**
+ * Defines a record type mapping route parameter names to their values.
+ */
+export type RouteParamsRecord<T extends string | RegExp = ""> = T extends "" ? Record<string, ParameterValue> : Record<RouteParameters<T extends string ? T : string>, ParameterValue>;
+
+/**
+ * Defines a record type mapping route identifiers to their route matching status.
+ */
+export type RouteStatusRecord = Record<string, RouteStatus>;
+
+/**
+ * Defines the context type provided by router components through their `children` snippet.
+ */
+export type RouterChildrenContext = {
+    /**
+     * Holds the state data associated to the current routing universe.
+     */
+    state: any;
+    /**
+     * Holds the route status data for all routes managed by the router.
+     */
+    rs: RouteStatusRecord;
+};
+
+/**
+ * Defines the context type provided by route components through their `children` snippet.
+ */
+export type RouteChildrenContext<T extends string | RegExp = ""> = RouterChildrenContext & {
+    /**
+     * Holds the route parameters for the route.
+     */
+    rp?: RouteParamsRecord<T>;
+};
+
+/**
+ * Defines the context type provided by link components through their `children` snippet.
+ */
+export type LinkChildrenContext = Omit<RouterChildrenContext, 'rs'> & {
+    /**
+     * Holds the route status data for all routes managed by the parent router, if said parent 
+     * exists.
+     */
+    rs?: RouteStatusRecord | undefined;
+};
 
 /**
  * Defines the shape of predicate functions that are used to further test if a route should be matched.
  */
-export type AndUntyped = (params: Record<string, ParameterValue> | undefined) => boolean;
+export type AndUntyped = (params: RouteParamsRecord | undefined) => boolean;
 
 /**
  * Defines the core properties of a route definition.
@@ -114,7 +179,7 @@ export type RedirectedRouteInfo = NoIgnoreForFallback<RouteInfo> & {
      * The HREF to navigate to (via `location.navigate()` or `location.goTo()`).  It can be a string or a function that 
      * receives the matched route parameters and returns a string.
      */
-    href: string | ((routeParams: Record<string, ParameterValue> | undefined) => string);
+    href: string | ((routeParams: RouteParamsRecord | undefined) => string);
 } & ({
     /**
      * Indicates that the redirection should use the `Location.goTo` method.

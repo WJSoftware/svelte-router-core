@@ -6,7 +6,7 @@
 	import { getLinkContext, type ILinkContext } from '$lib/LinkContext/LinkContext.svelte';
 	import { isRouteActive } from '$lib/public-utils.js';
 	import { getRouterContext } from '$lib/Router/Router.svelte';
-	import type { Hash, RouteStatus } from '$lib/types.js';
+	import type { Hash, LinkChildrenContext } from '$lib/types.js';
 	import { assertAllowedRoutingMode, expandAriaAttributes, joinStyles } from '$lib/utils.js';
 	import { type Snippet } from 'svelte';
 	import type { AriaAttributes, HTMLAnchorAttributes } from 'svelte/elements';
@@ -60,12 +60,9 @@
 			activeFor?: string;
 			/**
 			 * Renders the children of the component.
-			 * @param state The state object stored in in the window's History API for the universe the link is
-			 * associated to.
-			 * @param routeStatus The router's route status data, if the `Link` component is within the context of a
-			 * router.
+			 * @param context The component's context available to children.
 			 */
-			children?: Snippet<[any, Record<string, RouteStatus> | undefined]>;
+			children?: Snippet<[LinkChildrenContext]>;
 		};
 
 	let {
@@ -111,14 +108,18 @@
 		};
 	});
 	const isActive = $derived(isRouteActive(router, activeFor));
-	const calcHref = $derived(href === '' ? location.url.href : calculateHref(
-			{
-				hash: resolvedHash,
-				preserveQuery: calcPreserveQuery
-			},
-			calcPrependBasePath ? router?.basePath : undefined,
-			href
-		));
+	const calcHref = $derived(
+		href === ''
+			? location.url.href
+			: calculateHref(
+					{
+						hash: resolvedHash,
+						preserveQuery: calcPreserveQuery
+					},
+					calcPrependBasePath ? router?.basePath : undefined,
+					href
+				)
+	);
 
 	function handleClick(event: MouseEvent & { currentTarget: EventTarget & HTMLAnchorElement }) {
 		incomingOnclick?.(event);
@@ -134,8 +135,8 @@
 	class={[cssClass, (isActive && calcActiveState?.class) || undefined]}
 	style={isActive ? joinStyles(style, calcActiveState?.style) : style}
 	onclick={handleClick}
-	{...(isActive ? calcActiveStateAria : undefined)}
+	{...isActive ? calcActiveStateAria : undefined}
 	{...restProps}
 >
-	{@render children?.(location.getState(resolvedHash), router?.routeStatus)}
+	{@render children?.({ state: location.getState(resolvedHash), rs: router?.routeStatus })}
 </a>

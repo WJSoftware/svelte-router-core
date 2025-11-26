@@ -15,7 +15,7 @@ SPA-friendly navigation (navigation without reloading).
 | `activeState` | `ActiveState` | `undefined` | | Sets the various options that are used to automatically style the anchor tag whenever a particular route becomes active. |
 | `prependBasePath` | `boolean` | `false` | | Configures the component to prepend the parent router's base path to the `href` property. |
 | `preserveQuery` | `PreserveQuery` | `false` | | Configures the component to preserve the query string whenever it triggers navigation. |
-| `children` | `Snippet<[any, Record<string, RouteStatus> \| undefined]>` | `undefined` | | Renders the children of the component. |
+| `children` | `Snippet<[LinkChildrenContext]>` | `undefined` | | Renders the children of the component. |
 
 [Online Documentation](https://wjfe-n-savant.hashnode.space/wjfe-n-savant/components/link)
 
@@ -48,7 +48,7 @@ automatically trigger its active appearance based on a specific route becoming a
     href="/admin/users"
     prependBasePath
     activeFor="adminUsers"
-    activeState={{ class: 'active', aria: { 'aria-current': 'page' } }}
+    activeState={{ class: 'active', aria: { current: 'page' } }}
   >
     Click Me!
   </Link>

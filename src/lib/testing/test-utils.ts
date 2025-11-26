@@ -158,10 +158,10 @@ type RouteSpecs = {
     specs: Omit<RouteInfo, 'and'> & { name?: string; };
 }
 
-export function addRoutes(router: RouterEngine, routes: { matching?: number; nonMatching?: number; }, ...add: (RouteInfo & { name?: string; })[]): string[];
-export function addRoutes(router: RouterEngine, routes: { matching?: RouteSpecs ; nonMatching?: RouteSpecs; }, ...add: (RouteInfo & { name?: string; })[]): string[];
-export function addRoutes(router: RouterEngine, routes: { matching?: number | RouteSpecs; nonMatching?: number | RouteSpecs; }, ...add: (RouteInfo & { name?: string; })[]): string[] {
-    const { matching = 0, nonMatching = 0 } = routes;
+export function addRoutes(router: RouterEngine, routes: undefined | { matching?: number; nonMatching?: number; }, ...add: (RouteInfo & { name?: string; })[]): string[];
+export function addRoutes(router: RouterEngine, routes: undefined | { matching?: RouteSpecs ; nonMatching?: RouteSpecs; }, ...add: (RouteInfo & { name?: string; })[]): string[];
+export function addRoutes(router: RouterEngine, routes: undefined | { matching?: number | RouteSpecs; nonMatching?: number | RouteSpecs; }, ...add: (RouteInfo & { name?: string; })[]): string[] {
+    const { matching = 0, nonMatching = 0 } = routes || {};
     const routeNames: string[] = [];
     [[matching, addMatchingRoute] as const, [nonMatching, addNonMatchingRoute] as const].forEach(x => {
         const [r, fn] = x;

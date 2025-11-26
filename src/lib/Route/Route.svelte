@@ -1,26 +1,8 @@
-<script lang="ts" module>
-	export type ParamName<T> = T extends `${infer P}?` ? P : T;
-	/**
-	 * Extracts the parameters from a route pattern.
-	 */
-	export type RouteParameters<T> = T extends string
-		? T extends `${string}:${infer Param}/${infer Rest}`
-			? ParamName<Param> | RouteParameters<Rest>
-			: T extends `${string}:${infer Param}`
-				? ParamName<Param>
-				: T extends `${string}/*`
-					? 'rest'
-					: T extends '*'
-						? 'rest'
-						: never
-		: string;
-</script>
-
 <script lang="ts" generics="T extends string | RegExp">
 	import { untrack, type Snippet } from 'svelte';
 	import { getRouterContext } from '../Router/Router.svelte';
 	import { resolveHashValue } from '$lib/kernel/resolveHashValue.js';
-	import type { ParameterValue, RouteStatus } from '$lib/types.js';
+	import type { AndUntyped, Hash, RouteChildrenContext, RouteParamsRecord } from '$lib/types.js';
 	import { assertAllowedRoutingMode } from '$lib/utils.js';
 
 	type Props = {
@@ -70,7 +52,7 @@
 		 *
 		 * **IMPORTANT**:  A route without `path` or `amd` is not registered in the router.
 		 */
-		and?: (params: Record<RouteParameters<T>, ParameterValue> | undefined) => boolean;
+		and?: (params: RouteParamsRecord<T> | undefined) => boolean;
 		/**
 		 * Sets whether the route's match status should be ignored for fallback purposes.
 		 *
@@ -106,20 +88,17 @@
 		 * {/key}
 		 * ```
 		 */
-		hash?: boolean | string;
+		hash?: Hash;
 		/**
 		 * Bindable.  Provides a way to obtain a route's parameters through property binding.  The binding is
 		 * write-only, so incoming changes have no effect.
 		 */
-		params?: Record<RouteParameters<T>, ParameterValue>;
+		params?: RouteParamsRecord<T>;
 		/**
 		 * Renders the children of the route.
-		 * @param params The route's parameters.
-		 * @param state The state object stored in in the window's History API for the universe the route is associated 
-		 * to.
-		 * @param routeStatus The router's route status object.
+		 * @param context The component's context available to children.
 		 */
-		children?: Snippet<[Record<RouteParameters<T>, ParameterValue> | undefined, any, Record<string, RouteStatus>]>;
+		children?: Snippet<[RouteChildrenContext<T>]>;
 	};
 
 	let {
@@ -151,10 +130,10 @@
 		// svelte-ignore ownership_invalid_mutation
 		untrack(() => router.routes)[key] =
 			path instanceof RegExp
-				? { regex: path, and, ignoreForFallback }
+				? { regex: path, and: and as AndUntyped, ignoreForFallback }
 				: {
 						pattern: path,
-						and,
+						and: and as AndUntyped,
 						ignoreForFallback,
 						caseSensitive
 					};
@@ -165,16 +144,20 @@
 	});
 	// Effect that synchronizes the params property with the calculated params.
 	$effect.pre(() => {
-		params = router.routeStatus[key]?.routeParams;
+		params = router.routeStatus[key]?.routeParams as RouteParamsRecord<T> | undefined;
 	});
 </script>
 
-{#if (router.routeStatus[key]?.match ?? (!and && !path))}
+{#if router.routeStatus[key]?.match ?? (!and && !path)}
 	<!--
 		Changed use of params for router.routeStatus[key]?.routeParams to work around issues around
 		$effect.pre() introduced with async Svelte.
 
 		See:  https://github.com/sveltejs/svelte/pull/16930#issuecomment-3427913259
 	-->
-	{@render children?.(router.routeStatus[key]?.routeParams, router.state, router.routeStatus)}
+	{@render children?.({
+		rp: router.routeStatus[key]?.routeParams as RouteParamsRecord<T>,
+		state: router.state,
+		rs: router.routeStatus
+	})}
 {/if}

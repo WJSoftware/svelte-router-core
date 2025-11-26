@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolveHashValue } from '$lib/kernel/resolveHashValue.js';
 	import { getRouterContext } from '$lib/Router/Router.svelte';
-	import type { RouteStatus, WhenPredicate } from '$lib/types.js';
+	import type { Hash, RouterChildrenContext, WhenPredicate } from '$lib/types.js';
 	import { assertAllowedRoutingMode } from '$lib/utils.js';
 	import type { Snippet } from 'svelte';
 
@@ -29,16 +29,16 @@
 		 * {/key}
 		 * ```
 		 */
-		hash?: boolean | string;
+		hash?: Hash;
 		/**
 		 * Overrides the default activation conditions for the fallback content inside the component.
-		 * 
-		 * This is useful in complex routing scenarios, where fallback content is being prevented from showing due to 
-		 * certain route or routes matching at certain points, leaving no opportunity for the router to be "out of 
+		 *
+		 * This is useful in complex routing scenarios, where fallback content is being prevented from showing due to
+		 * certain route or routes matching at certain points, leaving no opportunity for the router to be "out of
 		 * matching routes".
-		 * 
+		 *
 		 * **This completely disconnects the `Fallback` component from the router's matching logic.**
-		 * 
+		 *
 		 * @example
 		 * ```svelte
 		 * <!--
@@ -55,11 +55,9 @@
 		 *
 		 * This rendering is conditioned to the parent router engine's `noMatches` property being `true`.  This means
 		 * that the children will only be rendered when no route matches the current location.
-		 * @param state The state object stored in in the window's History API for the universe the fallback component 
-		 * is associated to.
-		 * @param routeStatus The router's route status data.
+		 * @param context The component's context available to children.
 		 */
-		children?: Snippet<[any, Record<string, RouteStatus>]>;
+		children?: Snippet<[RouterChildrenContext]>;
 	};
 
 	let { hash, when, children }: Props = $props();
@@ -71,5 +69,5 @@
 </script>
 
 {#if (router && when?.(router.routeStatus, router.noMatches)) || (!when && router?.noMatches)}
-	{@render children?.(router.state, router.routeStatus)}
+	{@render children?.({ state: router.state, rs: router.routeStatus })}
 {/if}

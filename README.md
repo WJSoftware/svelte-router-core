@@ -60,7 +60,7 @@ de-synchronizing state.
 ### Install the package
 
 ```bash
-npm i @svelte-router/core@beta // For now, until v1.0.0 is released
+npm i @svelte-router/core@beta # For now, until v1.0.0 is released
 ```
 
 ### Initialize the Library
@@ -120,8 +120,8 @@ details.
     </Route>
     <Route key="user" path="/users/:userId">
       <!-- access parameters via the snippet parameter -->
-      {#snippet children(params)}
-        <UserView id={params.userId} /> <!-- Intellisense will work here!! -->
+      {#snippet children({ rp })}
+        <UserView id={rp?.userId} /> <!-- Intellisense will work here!! -->
       {/snippet}
     </Route>
     ...

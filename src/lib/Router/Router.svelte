@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	import { RouterEngine } from '$lib/kernel/RouterEngine.svelte.js';
 	import { resolveHashValue } from '$lib/kernel/resolveHashValue.js';
-	import type { Hash, RouteStatus } from '$lib/types.js';
+	import type { Hash, RouterChildrenContext } from '$lib/types.js';
 
 	const parentCtxKey = Symbol();
 	const hashParentCtxKey = Symbol();
@@ -99,17 +99,15 @@
 		 * 	   <Router {hash} />
 		 * {/key}
 		 */
-		hash?: boolean | string;
+		hash?: Hash;
 		/**
 		 * Renders the children of the router.
 		 *
-		 * Children content can be anything, but note that that the useful children are the `Route` components.  Any
+		 * Children content can be anything, but note that that the "useful" children are the `Route` components.  Any
 		 * other content will be rendered regardless of the current route.
-		 * @param state The state object stored in in the window's History API for the universe the route is associated 
-		 * to.
-		 * @param routeStatus The router's route status data.
+		 * @param context The component's context available to children.
 		 */
-		children?: Snippet<[any, Record<string, RouteStatus>]>;
+		children?: Snippet<[RouterChildrenContext]>;
 	};
 
 	let { router = $bindable(), basePath, id, hash, children }: Props = $props();
@@ -143,4 +141,4 @@
 	});
 </script>
 
-{@render children?.(router.state, router.routeStatus)}
+{@render children?.({state: router.state, rs: router.routeStatus})}

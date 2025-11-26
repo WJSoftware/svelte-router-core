@@ -40,9 +40,9 @@
         {hash}
         bind:params
     >
-        {#snippet children(params, state, routeStatus)}
+        {#snippet children({ rp, state, rs })}
             {#if routeChildren}
-                {@render routeChildren(params, state, routeStatus)}
+                {@render routeChildren(rp, state, rs)}
             {:else}
                 <div data-testid="route-content" data-params={JSON.stringify(params || {})}>
                     Route Content - Key: {routeKey}

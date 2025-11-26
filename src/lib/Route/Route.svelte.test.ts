@@ -1,12 +1,13 @@
 import { describe, test, expect, beforeEach, vi, beforeAll, afterAll, afterEach } from "vitest";
 import { render } from "@testing-library/svelte";
+import { createRawSnippet, flushSync } from "svelte";
 import Route from "./Route.svelte";
-import { createTestSnippet, createRouterTestSetup, ROUTING_UNIVERSES, ALL_HASHES } from "$test/test-utils.js";
+import { createTestSnippet, createRouterTestSetup, ROUTING_UNIVERSES, ALL_HASHES, addMatchingRoute } from "$test/test-utils.js";
 import { init } from "$lib/init.js";
 import { location } from "$lib/kernel/Location.js";
 import TestRouteWithRouter from "$test/TestRouteWithRouter.svelte";
 import { resetRoutingOptions, setRoutingOptions } from "$lib/kernel/options.js";
-import type { ExtendedRoutingOptions, InitOptions } from "$lib/types.js";
+import type { ExtendedRoutingOptions, RouteChildrenContext } from "$lib/types.js";
 
 function basicRouteTests(setup: ReturnType<typeof createRouterTestSetup>) {
     beforeEach(() => {
@@ -47,7 +48,7 @@ function basicRouteTests(setup: ReturnType<typeof createRouterTestSetup>) {
         // Act & Assert - Should not register route without path or and
         expect(() => {
             render(TestRouteWithRouter, {
-                props: { 
+                props: {
                     hash,
                     routeKey: "no-path-route",
                     routePath: undefined as any,
@@ -139,7 +140,7 @@ function routePropsTests(setup: ReturnType<typeof createRouterTestSetup>) {
 
         // Act.
         render(TestRouteWithRouter, {
-            props: { 
+            props: {
                 hash,
                 routeKey: "and-route",
                 routePath: "/test",
@@ -285,7 +286,7 @@ function routeReactivityTests(setup: ReturnType<typeof createRouterTestSetup>) {
             },
             context
         });
-        
+
         const initialRoute = routerInstance?.routes["reactive-route"];
         expect(initialRoute?.pattern).toBe(initialPath);
 
@@ -469,17 +470,17 @@ function routeBindingTestsForUniverse(setup: ReturnType<typeof createRouterTestS
             return "http://example.com/user/123"; // Default to path routing
         })();
         location.url.href = url;
-        await vi.waitFor(() => {});
+        await vi.waitFor(() => { });
 
         // Assert.
         expect(paramsSetter).toHaveBeenCalled();
-        
+
         // Multi-hash routing (MHR) has different behavior and may not work with simple URLs in tests
         if (ru.text === 'MHR') {
             // Skip assertion for MHR as it requires more complex setup
             return;
         }
-        
+
         expect(capturedParams).toEqual({ id: 123 }); // Number due to auto-conversion
     });
 
@@ -513,7 +514,7 @@ function routeBindingTestsForUniverse(setup: ReturnType<typeof createRouterTestS
             return "http://example.com/about";
         })();
         location.url.href = url;
-        await vi.waitFor(() => {});
+        await vi.waitFor(() => { });
 
         // Assert.
         expect(paramsSetter).toHaveBeenCalled();
@@ -551,7 +552,7 @@ function routeBindingTestsForUniverse(setup: ReturnType<typeof createRouterTestS
             return "http://example.com/other";
         })();
         location.url.href = url;
-        await vi.waitFor(() => {});
+        await vi.waitFor(() => { });
 
         // Assert.
         expect(paramsSetter).toHaveBeenCalled();
@@ -587,16 +588,16 @@ function routeBindingTestsForUniverse(setup: ReturnType<typeof createRouterTestS
             return "http://example.com/user/123";
         })();
         location.url.href = url;
-        await vi.waitFor(() => {});
-        
+        await vi.waitFor(() => { });
+
         const firstParams = capturedParams;
-        
+
         // Multi-hash routing (MHR) has different behavior and may not work with simple URLs in tests
         if (ru.text === 'MHR') {
             // Skip assertion for MHR as it requires more complex setup
             return;
         }
-        
+
         expect(firstParams).toEqual({ id: 123 }); // Number due to auto-conversion
 
         // Act - Navigate to different matching path
@@ -610,7 +611,7 @@ function routeBindingTestsForUniverse(setup: ReturnType<typeof createRouterTestS
             return "http://example.com/user/456";
         })();
         location.url.href = url2;
-        await vi.waitFor(() => {});
+        await vi.waitFor(() => { });
 
         // Assert.
         expect(capturedParams).toEqual({ id: 456 }); // Number due to auto-conversion
@@ -647,17 +648,17 @@ function routeBindingTestsForUniverse(setup: ReturnType<typeof createRouterTestS
             return "http://example.com/user/123/post/456";
         })();
         location.url.href = url;
-        await vi.waitFor(() => {});
+        await vi.waitFor(() => { });
 
         // Assert.
         expect(paramsSetter).toHaveBeenCalled();
-        
+
         // Multi-hash routing (MHR) has different behavior and may not work with simple URLs in tests
         if (ru.text === 'MHR') {
             // Skip assertion for MHR as it requires more complex setup
             return;
         }
-        
+
         expect(capturedParams).toEqual({ userId: 123, postId: 456 }); // Numbers due to auto-conversion
     });
 
@@ -691,17 +692,17 @@ function routeBindingTestsForUniverse(setup: ReturnType<typeof createRouterTestS
             return "http://example.com/files/documents/readme.txt";
         })();
         location.url.href = url;
-        await vi.waitFor(() => {});
+        await vi.waitFor(() => { });
 
         // Assert.
         expect(paramsSetter).toHaveBeenCalled();
-        
+
         // Multi-hash routing (MHR) has different behavior and may not work with simple URLs in tests
         if (ru.text === 'MHR') {
             // Skip assertion for MHR as it requires more complex setup
             return;
         }
-        
+
         expect(capturedParams).toEqual({ rest: "/documents/readme.txt" });
     });
 }
@@ -751,7 +752,7 @@ describe("Routing Mode Assertions", () => {
                 props: {
                     key: 'r1',
                     hash,
-                }, 
+                },
             });
         }).toThrow();
     });
@@ -764,12 +765,12 @@ describe("Routing Mode Assertions", () => {
 
         // Act & Assert
         expect(() => {
-            render(Route, { 
-                props: { 
+            render(Route, {
+                props: {
                     hash,
-                    key: "test-route", 
-                }, 
-                context: setup.context 
+                    key: "test-route",
+                },
+                context: setup.context
             });
         }).not.toThrow();
 
@@ -778,19 +779,157 @@ describe("Routing Mode Assertions", () => {
     });
 });
 
+function routeChildrenSnippetContextTests(setup: ReturnType<typeof createRouterTestSetup>) {
+    beforeEach(() => {
+        setup.init();
+    });
+
+    afterAll(() => {
+        setup.dispose();
+    });
+
+    test("Should pass RouteChildrenContext with correct structure to children snippet when route matches.", async () => {
+        // Arrange.
+        const { hash, context, router } = setup;
+        const routeKey = "test-route";
+        addMatchingRoute(router, {
+            name: routeKey,
+        });
+        let capturedContext: RouteChildrenContext;
+        const routeChildren = createRawSnippet<[RouteChildrenContext]>((contextObj) => {
+            capturedContext = contextObj();
+            return { render: () => '<div>Context Test</div>' };
+        });
+
+        render(Route, {
+            props: {
+                hash,
+                key: routeKey,
+                children: routeChildren,
+            },
+            context
+        });
+
+        // Assert.
+        expect(capturedContext!).toBeDefined();
+        expect(capturedContext!).toHaveProperty('rp'); // Route parameters
+        expect(capturedContext!).toHaveProperty('state'); // State 
+        expect(capturedContext!).toHaveProperty('rs'); // Route status
+    });
+
+    test("Should provide route parameters in children snippet context.", async () => {
+        // Arrange.
+        const { hash, context, router } = setup;
+        const routeKey = "test-route";
+        location.navigate("/user/42", { hash });
+        let capturedContext: RouteChildrenContext;
+        const routeChildren = createRawSnippet<[RouteChildrenContext]>((contextObj) => {
+            capturedContext = contextObj();
+            return { render: () => '<div>Route</div>' };
+        });
+
+        render(Route, {
+            props: {
+                hash,
+                key: routeKey,
+                path: '/user/:id',
+                children: routeChildren
+            },
+            context
+        });
+        flushSync();
+
+        // Assert.
+        expect(capturedContext!.rp).toBeDefined();
+    });
+
+    test("Should provide route status and state in children snippet context.", async () => {
+        // Arrange.
+        const { hash, context } = setup;
+        const newState = { msg: "Hello, Route!" };
+        location.navigate("/", { hash, state: newState });
+        let capturedContext: RouteChildrenContext;
+        const routeChildren = createRawSnippet<[RouteChildrenContext]>((contextObj) => {
+            capturedContext = contextObj();
+            return { render: () => '<div>Route Status Test</div>' };
+        });
+
+        render(Route, {
+            props: {
+                hash,
+                key: "test-route",
+                children: routeChildren
+            },
+            context
+        });
+
+        // Assert.
+        expect(capturedContext!.state).toBeDefined();
+        expect(capturedContext!.rs).toBeDefined();
+        expect(typeof capturedContext!.rs).toBe('object');
+        expect(capturedContext!.state).toEqual(newState);
+    });
+
+    test("Should not render children snippet when route does not match.", async () => {
+        // Arrange.
+        const { hash, context } = setup;
+        let callCount = 0;
+        const routeChildren = createRawSnippet<[RouteChildrenContext]>((contextObj) => {
+            callCount++;
+            return { render: () => '<div>Should Not Render</div>' };
+        });
+
+        render(Route, {
+            props: {
+                hash,
+                key: "test-route",
+                and: () => false,
+                children: routeChildren
+            },
+            context
+        });
+
+        // Assert - snippet should not be called when route doesn't match.
+        expect(callCount).toBe(0);
+    });
+
+    test("Should provide empty or undefined rp when route has no parameters.", async () => {
+        // Arrange.
+        const { hash, context } = setup;
+        let capturedContext: RouteChildrenContext;
+        const routeChildren = createRawSnippet<[RouteChildrenContext]>((contextObj) => {
+            capturedContext = contextObj();
+            return { render: () => '<div>No Params Route</div>' };
+        });
+
+        render(Route, {
+            props: {
+                hash,
+                key: "no-params-route",
+                children: routeChildren
+            },
+            context
+        });
+
+        // Assert.
+        expect(capturedContext!).toBeDefined();
+        expect(capturedContext!.rp === undefined || Object.keys(capturedContext!.rp || {}).length === 0).toBe(true);
+    });
+}
+
 // Run tests for each routing universe
 for (const ru of ROUTING_UNIVERSES) {
     describe(`Route - ${ru.text}`, () => {
         const setup = createRouterTestSetup(ru.hash);
         let cleanup: () => void;
-        
+
         beforeAll(() => {
             cleanup = init({
                 defaultHash: ru.defaultHash,
                 hashMode: ru.hashMode,
             });
         });
-        
+
         afterAll(() => {
             cleanup?.();
         });
@@ -821,6 +960,10 @@ for (const ru of ROUTING_UNIVERSES) {
 
         describe("Binding", () => {
             routeBindingTestsForUniverse(setup, ru);
+        });
+
+        describe("Children Snippet Context", () => {
+            routeChildrenSnippetContextTests(setup);
         });
     });
 }

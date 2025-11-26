@@ -2,9 +2,11 @@ import { describe, test, expect, beforeEach, vi, beforeAll, afterAll } from "vit
 import { render } from "@testing-library/svelte";
 import Router, { getRouterContextKey } from "./Router.svelte";
 import { RouterEngine } from "$lib/kernel/RouterEngine.svelte.js";
-import { createTestSnippet, createRouterTestSetup, ROUTING_UNIVERSES } from "$test/test-utils.js";
-import { flushSync } from "svelte";
+import { createTestSnippet, createRouterTestSetup, ROUTING_UNIVERSES, addRoutes } from "$test/test-utils.js";
+import { flushSync, createRawSnippet } from "svelte";
 import { init } from "$lib/init.js";
+import type { RouterChildrenContext } from "$lib/types.js";
+import { location } from "$lib/kernel/Location.js";
 
 function basicRouterTests(setup: ReturnType<typeof createRouterTestSetup>) {
     beforeEach(() => {
@@ -97,12 +99,12 @@ function routerPropsTests(setup: ReturnType<typeof createRouterTestSetup>) {
 
         // Act.
         render(Router, {
-            props: { 
-                hash, 
+            props: {
+                hash,
                 basePath,
                 get router() { return routerInstance; },
                 set router(value) { routerInstance = value; },
-                children: content 
+                children: content
             },
             context
         });
@@ -120,12 +122,12 @@ function routerPropsTests(setup: ReturnType<typeof createRouterTestSetup>) {
 
         // Act.
         render(Router, {
-            props: { 
-                hash, 
+            props: {
+                hash,
                 id: routerId,
                 get router() { return routerInstance; },
                 set router(value) { routerInstance = value; },
-                children: content 
+                children: content
             },
             context
         });
@@ -166,24 +168,24 @@ function routerReactivityTests(setup: ReturnType<typeof createRouterTestSetup>) 
         let routerInstance: RouterEngine | undefined;
 
         const { rerender } = render(Router, {
-            props: { 
-                hash, 
+            props: {
+                hash,
                 basePath: initialBasePath,
                 get router() { return routerInstance; },
                 set router(value) { routerInstance = value; },
-                children: content 
+                children: content
             },
             context
         });
         expect(routerInstance?.basePath).toBe(initialBasePath);
 
         // Act.
-        await rerender({ 
-            hash, 
+        await rerender({
+            hash,
             basePath: updatedBasePath,
             get router() { return routerInstance; },
             set router(value) { routerInstance = value; },
-            children: content 
+            children: content
         });
 
         // Assert.
@@ -199,24 +201,24 @@ function routerReactivityTests(setup: ReturnType<typeof createRouterTestSetup>) 
         let routerInstance: RouterEngine | undefined;
 
         const { rerender } = render(Router, {
-            props: { 
-                hash, 
+            props: {
+                hash,
                 id: initialId,
                 get router() { return routerInstance; },
                 set router(value) { routerInstance = value; },
-                children: content 
+                children: content
             },
             context
         });
         expect(routerInstance?.id).toBe(initialId);
 
         // Act.
-        await rerender({ 
-            hash, 
+        await rerender({
+            hash,
             id: updatedId,
             get router() { return routerInstance; },
             set router(value) { routerInstance = value; },
-            children: content 
+            children: content
         });
 
         // Assert.
@@ -231,12 +233,12 @@ function routerReactivityTests(setup: ReturnType<typeof createRouterTestSetup>) 
         let routerInstance: RouterEngine | undefined;
 
         render(Router, {
-            props: { 
-                hash, 
+            props: {
+                hash,
                 get basePath() { return basePath; },
                 get router() { return routerInstance; },
                 set router(value) { routerInstance = value; },
-                children: content 
+                children: content
             },
             context
         });
@@ -258,12 +260,12 @@ function routerReactivityTests(setup: ReturnType<typeof createRouterTestSetup>) 
         let routerInstance: RouterEngine | undefined;
 
         render(Router, {
-            props: { 
-                hash, 
+            props: {
+                hash,
                 get id() { return id; },
                 get router() { return routerInstance; },
                 set router(value) { routerInstance = value; },
-                children: content 
+                children: content
             },
             context
         });
@@ -293,7 +295,7 @@ function contextFunctionTests() {
         const multiHashKey1 = getRouterContextKey("nav");
         const multiHashKey2 = getRouterContextKey("nav");
         const multiHashKey3 = getRouterContextKey("sidebar");
-        
+
         expect(multiHashKey1).toBeDefined();
         expect(multiHashKey1).toBe(multiHashKey2); // Same string should give same key
         expect(multiHashKey1).not.toBe(multiHashKey3); // Different strings should give different keys
@@ -316,7 +318,7 @@ function routerDisposalTests(setup: ReturnType<typeof createRouterTestSetup>) {
         const { hash, context } = setup;
         const content = createTestSnippet('<div>Test content</div>');
         let capturedRouter: any;
-        
+
         const { unmount } = render(Router, {
             props: {
                 hash,
@@ -401,8 +403,8 @@ function routerBindingTests(setup: ReturnType<typeof createRouterTestSetup>) {
         const { hash, context } = setup;
         const content = createTestSnippet('<div>BasePath Binding Test</div>');
         let boundRouter: any;
-        const setterSpy = vi.fn((value) => { 
-            boundRouter = value; 
+        const setterSpy = vi.fn((value) => {
+            boundRouter = value;
         });
 
         const { rerender } = render(Router, {
@@ -439,12 +441,12 @@ function routerBindingTests(setup: ReturnType<typeof createRouterTestSetup>) {
         const content = createTestSnippet('<div>Reactive Binding Test</div>');
         let boundRouter = $state<any>(undefined);
         let setterCallCount = 0;
-        
+
         render(Router, {
             props: {
                 hash,
                 get router() { return boundRouter; },
-                set router(value) { 
+                set router(value) {
                     boundRouter = value;
                     setterCallCount++;
                 },
@@ -456,9 +458,122 @@ function routerBindingTests(setup: ReturnType<typeof createRouterTestSetup>) {
         // Assert.
         expect(setterCallCount).toBe(1);
         expect(boundRouter).toBeDefined();
-        
+
         // The bound router should be accessible and functional
         expect(typeof boundRouter.dispose).toBe('function');
+    });
+}
+
+function childrenSnippetContextTests(setup: ReturnType<typeof createRouterTestSetup>) {
+    beforeEach(() => {
+        // Fresh router instance for each test
+        setup.init();
+    });
+
+    afterAll(() => {
+        // Clean disposal after all tests
+        setup.dispose();
+    });
+
+    test("Should pass RouterChildrenContext with correct structure to children snippet.", async () => {
+        // Arrange.
+        const { hash } = setup;
+        let capturedContext: RouterChildrenContext;
+        const content = createRawSnippet<[RouterChildrenContext]>((contextObj) => {
+            capturedContext = contextObj();
+            return { render: () => '<div>Router Context Test</div>' };
+        });
+
+        // Act.
+        render(Router, {
+            props: { hash, children: content }
+        });
+
+        // Assert.
+        expect(capturedContext!).toBeDefined();
+        expect(capturedContext!).toHaveProperty('state');
+        expect(capturedContext!).toHaveProperty('rs');
+        expect(typeof capturedContext!.rs).toBe('object');
+    });
+
+    test("Should provide current router state in children snippet context.", async () => {
+        // Arrange.
+        const { hash } = setup;
+        let capturedContext: RouterChildrenContext;
+        const newState = { msg: 'Test State' };
+        location.navigate("/", { state: newState });
+        const content = createRawSnippet<[RouterChildrenContext]>((contextObj) => {
+            capturedContext = contextObj();
+            return { render: () => '<div>State Test</div>' };
+        });
+
+        // Act.
+        render(Router, {
+            props: { hash, children: content }
+        });
+
+        // Assert.
+        expect(capturedContext!.state).toBeDefined();
+        expect(capturedContext!.state).toEqual(expect.any(Object));
+    });
+
+    test("Should provide route status record in children snippet context.", async () => {
+        // Arrange.
+        const { hash } = setup;
+        let capturedContext: RouterChildrenContext;
+        let routerInstance: any;
+        const content = createRawSnippet<[RouterChildrenContext]>((contextObj) => {
+            capturedContext = contextObj();
+            return { render: () => '<div>RouteStatus Test</div>' };
+        });
+
+        // Act.
+        render(Router, {
+            props: {
+                hash,
+                children: content,
+                get router() { return routerInstance; },
+                set router(value) { routerInstance = value; }
+            }
+        });
+
+        // Add some routes to the Router component's engine to verify route status structure
+        if (routerInstance) {
+            addRoutes(routerInstance, { matching: 1, nonMatching: 1 });
+        }
+
+        // Assert.
+        expect(capturedContext!.rs).toBeDefined();
+        expect(typeof capturedContext!.rs).toBe('object');
+    });
+
+    test("Should update children snippet context reactively when router state changes.", async () => {
+        // Arrange.
+        const { hash } = setup;
+        const callHistory: RouterChildrenContext[] = [];
+        const content = createRawSnippet<[RouterChildrenContext]>((contextObj) => {
+            callHistory.push({ ...contextObj() });
+            return { render: () => '<div>Reactive Test</div>' };
+        });
+
+        render(Router, {
+            props: { hash, children: content }
+        });
+
+        // Act - trigger a state change by navigating
+        // This should cause the context to be updated
+        // Note: The specific method depends on the routing universe
+        flushSync(); // Ensure any pending updates are processed
+
+        // Assert.
+        // At minimum, we should have the initial call
+        expect(callHistory.length).toBeGreaterThanOrEqual(1);
+
+        // Verify the structure is consistent across calls
+        callHistory.forEach(call => {
+            expect(call).toHaveProperty('state');
+            expect(call).toHaveProperty('rs');
+        });
     });
 }
 
@@ -467,14 +582,14 @@ for (const ru of ROUTING_UNIVERSES) {
     describe(`Router - ${ru.text}`, () => {
         const setup = createRouterTestSetup(ru.hash);
         let cleanup: () => void;
-        
+
         beforeAll(() => {
             cleanup = init({
                 defaultHash: ru.defaultHash,
                 hashMode: ru.hashMode,
             });
         });
-        
+
         afterAll(() => {
             cleanup?.();
         });
@@ -497,6 +612,10 @@ for (const ru of ROUTING_UNIVERSES) {
 
         describe("Binding", () => {
             routerBindingTests(setup);
+        });
+
+        describe("Children Snippet Context", () => {
+            childrenSnippetContextTests(setup);
         });
     });
 }

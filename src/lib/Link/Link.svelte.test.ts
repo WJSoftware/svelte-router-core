@@ -2,11 +2,12 @@ import { init } from "$lib/init.js";
 import { location } from "$lib/kernel/Location.js";
 import { describe, test, expect, beforeAll, afterAll, beforeEach, vi, afterEach } from "vitest";
 import { render, fireEvent } from "@testing-library/svelte";
+import { createRawSnippet } from "svelte";
 import Link from "./Link.svelte";
-import { createRouterTestSetup, createTestSnippet, ROUTING_UNIVERSES, ALL_HASHES, createWindowMock, setupBrowserMocks, type RoutingUniverse, addMatchingRoute } from "$test/test-utils.js";
+import { createRouterTestSetup, createTestSnippet, ROUTING_UNIVERSES, ALL_HASHES, setupBrowserMocks, type RoutingUniverse, addMatchingRoute } from "$test/test-utils.js";
 import { flushSync } from "svelte";
 import { resetRoutingOptions, setRoutingOptions } from "$lib/kernel/options.js";
-import type { ExtendedRoutingOptions } from "$lib/types.js";
+import type { ExtendedRoutingOptions, LinkChildrenContext } from "$lib/types.js";
 import { linkCtxKey, type ILinkContext } from "$lib/LinkContext/LinkContext.svelte";
 import { calculateHref } from "$lib/kernel/calculateHref.js";
 
@@ -926,6 +927,151 @@ describe("Routing Mode Assertions", () => {
     });
 });
 
+function linkChildrenSnippetContextTests(setup: ReturnType<typeof createRouterTestSetup>) {
+    beforeEach(() => {
+        // Fresh router instance for each test
+        setup.init();
+    });
+
+    afterAll(() => {
+        // Clean disposal after all tests
+        setup.dispose();
+    });
+
+    test("Should pass LinkChildrenContext with correct structure to children snippet.", async () => {
+        // Arrange.
+        const { hash, context } = setup;
+        let capturedContext: LinkChildrenContext;
+        const content = createRawSnippet<[LinkChildrenContext]>((contextObj) => {
+            capturedContext = contextObj();
+            return { render: () => '<div>Link Context Test</div>' };
+        }) as any; // Cast to handle union type requirement
+
+        // Act.
+        render(Link, {
+            props: { hash, href: "/test", children: content },
+            context
+        });
+
+        // Assert.
+        expect(capturedContext!).toBeDefined();
+        expect(capturedContext!).toHaveProperty('state');
+        expect(capturedContext!).toHaveProperty('rs');
+        expect(typeof capturedContext!.state).toBe('object');
+        // rs can be undefined if no parent router
+        expect(capturedContext!.rs === undefined || typeof capturedContext!.rs === 'object').toBe(true);
+    });
+
+    test("Should provide current location state in children snippet context.", async () => {
+        // Arrange.
+        const { hash, context } = setup;
+        let capturedContext: LinkChildrenContext;
+        const content = createRawSnippet<[LinkChildrenContext]>((contextObj) => {
+            capturedContext = contextObj();
+            return { render: () => '<div>Link State Test</div>' };
+        }) as any; // Cast to handle union type requirement
+
+        // Act.
+        render(Link, {
+            props: { hash, href: "/test", children: content },
+            context
+        });
+
+        // Assert.
+        expect(capturedContext!.state).toBeDefined();
+        expect(capturedContext!.state).toEqual(expect.any(Object));
+    });
+
+    test("Should provide route status when parent router exists.", async () => {
+        // Arrange.
+        const { hash, router, context } = setup;
+        let capturedContext: LinkChildrenContext;
+        const content = createRawSnippet<[LinkChildrenContext]>((contextObj) => {
+            capturedContext = contextObj();
+            return { render: () => '<div>Link Router Status Test</div>' };
+        }) as any; // Cast to handle union type requirement
+
+        // Add a route to the parent router
+        addMatchingRoute(router);
+
+        // Act.
+        render(Link, {
+            props: { hash, href: "/test", children: content },
+            context
+        });
+
+        // Assert.
+        expect(capturedContext!.rs).toBeDefined();
+        expect(typeof capturedContext!.rs).toBe('object');
+
+        // Should have route entries from parent router
+        const routeKeys = Object.keys(capturedContext!.rs || {});
+        expect(routeKeys.length).toBeGreaterThan(0);
+
+        // Verify route status structure
+        routeKeys.forEach(key => {
+            expect(capturedContext?.rs![key]).toHaveProperty('match');
+            expect(typeof capturedContext?.rs![key].match).toBe('boolean');
+        });
+    });
+
+    test("Should handle undefined route status when no parent router exists.", async () => {
+        // Arrange.
+        const hash = undefined; // No parent router context
+        let capturedContext: LinkChildrenContext;
+        const content = createRawSnippet<[LinkChildrenContext]>((contextObj) => {
+            capturedContext = contextObj();
+            return { render: () => '<div>Link No Router Test</div>' };
+        }) as any; // Cast to handle union type requirement
+
+        // Act.
+        render(Link, {
+            props: { hash, href: "/test", children: content }
+            // No context - Link should work without parent router
+        });
+
+        // Assert.
+        expect(capturedContext!).toBeDefined();
+        expect(capturedContext!).toHaveProperty('state');
+        expect(capturedContext!).toHaveProperty('rs');
+        expect(capturedContext!.state).toBeDefined();
+        expect(capturedContext!.rs).toBeUndefined(); // No parent router means no route status
+    });
+
+    test("Should maintain consistent context structure across different link states.", async () => {
+        // Arrange.
+        const { hash, router, context } = setup;
+        const callHistory: LinkChildrenContext[] = [];
+        const content = createRawSnippet<[LinkChildrenContext]>((contextObj) => {
+            callHistory.push({ ...contextObj() });
+            return { render: () => '<div>Link Consistency Test</div>' };
+        }) as any; // Cast to handle union type requirement
+
+        // Add some routes to have a more complex router state  
+        const routeName = addMatchingRoute(router);
+
+        // Act.
+        const { rerender } = render(Link, {
+            props: { hash, href: "/test", children: content },
+            context
+        });
+
+        // Change link properties to trigger re-render
+        await rerender({ hash, href: "/different", activeFor: routeName, children: content });
+
+        // Assert.
+        expect(callHistory.length).toBeGreaterThan(0);
+
+        // All calls should have consistent structure
+        callHistory.forEach(call => {
+            expect(call).toHaveProperty('state');
+            expect(call).toHaveProperty('rs');
+            expect(typeof call.state).toBe('object');
+            expect(call.rs === undefined || typeof call.rs === 'object').toBe(true);
+        });
+    });
+}
+
 ROUTING_UNIVERSES.forEach(ru => {
     describe(`Link - ${ru.text}`, () => {
         const setup = createRouterTestSetup(ru.hash);
@@ -960,6 +1106,10 @@ ROUTING_UNIVERSES.forEach(ru => {
 
         describe("Reactivity", () => {
             reactivityTests(setup);
+        });
+
+        describe("Children Snippet Context", () => {
+            linkChildrenSnippetContextTests(setup);
         });
     });
 });
