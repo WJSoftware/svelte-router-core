@@ -29,12 +29,10 @@
 		refElement = refEl;
 		return () => {
 			refElement = null;
-			console.log('setReferenceElement cleaned up.');
 		}
 	}
 
 	function calculateTooltipPos(ttipEl: HTMLElement) {
-		console.log('calculateTooltipPos');
 		if (!refElement || !shown) {
 			return;
 		}
@@ -46,7 +44,6 @@
 				offset(8)
 			],
 		}).then(result => {
-			console.log(result);
 			pos = {
 				x: result.x,
 				y: result.y

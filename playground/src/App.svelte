@@ -27,7 +27,7 @@
 	const redirectedHash = routingMode === 'multi' ? 'redir' : true;
 	const redirector = new Redirector();
 	redirector.redirections.push({
-		pattern: '/deprecated-path',
+		path: '/deprecated-path',
 		href: () => {
 			const pathnamePiece = calculateHref({ hash: false }, '/feat');
 			const hashPiece = calculateHref({ hash: redirectedHash }, '/new-path');
