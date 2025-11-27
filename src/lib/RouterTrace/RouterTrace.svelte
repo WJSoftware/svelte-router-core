@@ -3,9 +3,9 @@
 	import { routePatternsKey, RouterEngine } from '$lib/kernel/RouterEngine.svelte.js';
 	import { resolveHashValue } from '$lib/kernel/resolveHashValue.js';
 	import { getRouterContext } from '$lib/Router/Router.svelte';
-	import type { PatternRouteInfo } from '$lib/types.js';
 	import type { HTMLTableAttributes } from 'svelte/elements';
 	import { assertAllowedRoutingMode } from '$lib/utils.js';
+	import type { Hash } from '$lib/types.js';
 
 	type Props = Omit<HTMLTableAttributes, 'children'> & {
 		/**
@@ -34,7 +34,7 @@
 		 * Unlike other components, the `RouterTrace` component does not need a hash value if a router engine object is
 		 * provided in its stead via the `router` property.
 		 */
-		hash?: boolean | string;
+		hash?: Hash;
 		/**
 		 * Sets the router engine to trace.
 		 */
@@ -127,12 +127,12 @@
 		{#each Object.entries(router.routeStatus) as [key, status]}
 			<tr>
 				<td>{key}</td>
-				{#if typeof (router.routes[key] as PatternRouteInfo).pattern === 'string'}
+				{#if typeof router.routes[key].path === 'string'}
 					<td>
-						<pre>{(router.routes[key] as PatternRouteInfo).pattern}</pre>
+						<pre>{router.routes[key].path}</pre>
 					</td>
 				{/if}
-				<td colspan={typeof (router.routes[key] as PatternRouteInfo).pattern === 'string' ? 1 : 2}>
+				<td colspan={typeof router.routes[key].path === 'string' ? 1 : 2}>
 					<code>{routePatterns.get(key)?.regex}</code>
 				</td>
 				<td>
