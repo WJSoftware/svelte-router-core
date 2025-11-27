@@ -52,7 +52,7 @@ Where `RouteInfo` contains:
 
 #### Reactive Properties
 - `routeStatus`: Per-route match status and extracted parameters
-- `noMatches`: Boolean indicating NO routes matched (excluding `ignoreForFallback` routes)
+- `fallback`: Boolean indicating NO routes matched (excluding `ignoreForFallback` routes)
 
 ### Component Architecture
 
@@ -72,12 +72,12 @@ universe they belong to.
 #### Fallback Component
 - Shows content when no routes match
 - Props:
-  - `when?: WhenPredicate`: Override default `noMatches` behavior
+  - `when?: WhenPredicate`: Override default `fallback` behavior
   - `children`: Content snippet
 
 Render logic:
 ```svelte
-{#if (router && when?.(router.routeStatus, router.noMatches)) || (!when && router?.noMatches)}
+{#if (router && when?.(router.routeStatus, router.fallback)) || (!when && router?.fallback)}
   {@render children?.(router.state, router.routeStatus)}
 {/if}
 ```
@@ -224,8 +224,8 @@ test("Should hide content when routes match.", () => {
 });
 
 // ❌ Bad - Test internal implementation
-test("Should call router.noMatches.", () => {
-    const spy = vi.spyOn(router, 'noMatches');
+test("Should call router.fallback.", () => {
+    const spy = vi.spyOn(router, 'fallback');
     render(Component, { props, context });
     expect(spy).toHaveBeenCalled(); // Testing implementation detail
 });
@@ -240,7 +240,7 @@ test("Component renders when condition is met.", () => {
 });
 
 // ✅ Router tests focus on router logic (separate file)
-test("Router calculates noMatches correctly.", () => {
+test("Router calculates fallback correctly.", () => {
     // Test router's internal logic
 });
 ```
@@ -691,7 +691,7 @@ test("Should react to state changes.", () => {
 **Purpose**: Render content when no routes match, with override capability
 
 **Key behaviors to test**:
-1. Shows when `router.noMatches` is true
+1. Shows when `router.fallback` is true
 2. Hides when routes are matching  
 3. Respects `when` predicate override
 4. Works across all routing universes

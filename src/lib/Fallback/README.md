@@ -3,7 +3,7 @@
 The `Fallback` component can be thought about as a `Route` component that only render its children if there are no 
 other routes in the parent router engine that match.
 
-Internally, it checks the parent router engine's `noMatches` value, which is a reactive value calculated when all other 
+Internally, it checks the parent router engine's `fallback` value, which is a reactive value calculated when all other 
 route status data is calculated.
 
 ## Props

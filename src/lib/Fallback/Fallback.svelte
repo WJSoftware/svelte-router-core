@@ -53,8 +53,8 @@
 		/**
 		 * Renders the children of the component.
 		 *
-		 * This rendering is conditioned to the parent router engine's `noMatches` property being `true`.  This means
-		 * that the children will only be rendered when no route matches the current location.
+		 * This rendering is conditioned to the parent router engine's `fallback` property being `true`.  This means
+		 * that the children will only be rendered when no routes match the current location.
 		 * @param context The component's context available to children.
 		 */
 		children?: Snippet<[RouterChildrenContext]>;
@@ -68,6 +68,6 @@
 	const router = getRouterContext(resolvedHash);
 </script>
 
-{#if (router && when?.(router.routeStatus, router.noMatches)) || (!when && router?.noMatches)}
+{#if (router && when?.(router.routeStatus, router.fallback)) || (!when && router?.fallback)}
 	{@render children?.({ state: router.state, rs: router.routeStatus })}
 {/if}

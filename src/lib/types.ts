@@ -428,10 +428,10 @@ export type ActiveState = {
  * Defines the type of function accepted by the `Fallback` component via its `when` property.
  * 
  * @param routeStatus The current route status data from the parent router.
- * @param noMatches The value that the parent router has calculated as per standard fallback logic.
+ * @param fallback The value that the parent router has calculated as per standard fallback logic.
  * @returns `true` if the fallback content should be shown; `false` to prevent content from being shown.
  */
-export type WhenPredicate = (routeStatus: Record<string, RouteStatus>, noMatches: boolean) => boolean;
+export type WhenPredicate = (routeStatus: Record<string, RouteStatus>, fallback: boolean) => boolean;
 
 /**
  * Defines the shape of logger objects that can be given to this library during initialization.

@@ -47,7 +47,7 @@ export class RouterEngine {
     #routeHelper;
     #cleanup = false;
     #parent: RouterEngine | undefined;
-    #resolvedHash: Hash;
+    resolvedHash: Hash;
     /**
      * Gets or sets the router's identifier.  This is displayed by the `RouterTracer` component.
      */
@@ -86,17 +86,17 @@ export class RouterEngine {
 
     #routeStatusData = $derived.by(() => {
         const routeStatus = {} as Record<string, RouteStatus>;
-        let noMatches = true;
+        let fallback = true;
         for (let routeKey of Object.keys(this.routes)) {
             const pattern = this.#routePatterns.get(routeKey)!;
             const [match, routeParams] = this.#routeHelper.testRoute(pattern);
-            noMatches = noMatches && (pattern.ignoreForFallback ? true : !match);
+            fallback = fallback && (pattern.ignoreForFallback ? true : !match);
             routeStatus[routeKey] = {
                 match,
                 routeParams,
             };
         }
-        return [routeStatus, noMatches] as const;
+        return [routeStatus, fallback] as const;
     });
     /**
      * Gets a a record of route statuses where the keys are the route keys, and the values are 
@@ -105,9 +105,9 @@ export class RouterEngine {
     routeStatus = $derived(this.#routeStatusData[0]);
     /**
      * Gets a boolean value that indicates whether the current URL matches none of the route 
-     * patterns.
+     * patterns, therefore enabling fallback behavior.
      */
-    noMatches = $derived(this.#routeStatusData[1]);
+    fallback = $derived(this.#routeStatusData[1]);
     /**
      * Initializes a new instance of this class with the specified options.
      */
@@ -121,24 +121,24 @@ export class RouterEngine {
             throw new Error("The routing library hasn't been initialized.  Execute init() before creating routers.");
         }
         if (isRouterEngine(parentOrOpts)) {
-            this.#resolvedHash = parentOrOpts.#resolvedHash;
+            this.resolvedHash = parentOrOpts.resolvedHash;
             this.#parent = parentOrOpts;
         }
         else {
             this.#parent = parentOrOpts?.parent;
-            this.#resolvedHash = this.#parent && parentOrOpts?.hash === undefined ? this.#parent.#resolvedHash : resolveHashValue(parentOrOpts?.hash);
-            if (this.#parent && this.#resolvedHash !== this.#parent.#resolvedHash) {
+            this.resolvedHash = this.#parent && parentOrOpts?.hash === undefined ? this.#parent.resolvedHash : resolveHashValue(parentOrOpts?.hash);
+            if (this.#parent && this.resolvedHash !== this.#parent.resolvedHash) {
                 throw new Error("The parent router's hash mode must match the child router's hash mode.");
             }
-            if (routingOptions.hashMode === 'multi' && this.#resolvedHash && typeof this.#resolvedHash !== 'string') {
+            if (routingOptions.hashMode === 'multi' && this.resolvedHash && typeof this.resolvedHash !== 'string') {
                 throw new Error("The specified hash value is not valid for the 'multi' hash mode.  Either don't specify a hash for path routing, or correct the hash value.");
             }
-            if (routingOptions.hashMode !== 'multi' && typeof this.#resolvedHash === 'string') {
+            if (routingOptions.hashMode !== 'multi' && typeof this.resolvedHash === 'string') {
                 throw new Error("A hash path ID was given, but is only allowed when the library's hash mode has been set to 'multi'.");
             }
         }
-        assertAllowedRoutingMode(this.#resolvedHash);
-        this.#routeHelper = new RouteHelper(this.#resolvedHash);
+        assertAllowedRoutingMode(this.resolvedHash);
+        this.#routeHelper = new RouteHelper(this.resolvedHash);
         if (traceOptions.routerHierarchy) {
             registerRouter(this);
             this.#cleanup = true;
@@ -158,7 +158,7 @@ export class RouterEngine {
      * This is a shortcut for `location.state`.
      */
     get state() {
-        return location.getState(this.#resolvedHash);
+        return location.getState(this.resolvedHash);
     }
     /**
      * Gets or sets the router's base path.

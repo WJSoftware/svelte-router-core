@@ -666,13 +666,13 @@ ROUTING_UNIVERSES.forEach(universe => {
             });
         });
 
-        describe('noMatches', () => {
+        describe('fallback', () => {
             test("Should be true whenever there are no routes registered.", () => {
                 // Act.
                 const router = new RouterEngine({ hash: universe.hash });
 
                 // Assert.
-                expect(router.noMatches).toBe(true);
+                expect(router.fallback).toBe(true);
             });
 
             test("Should be true whenever there are no matching routes.", () => {
@@ -686,7 +686,7 @@ ROUTING_UNIVERSES.forEach(universe => {
                 };
 
                 // Assert.
-                expect(router.noMatches).toBe(true);
+                expect(router.fallback).toBe(true);
             });
 
             test.each([
@@ -714,7 +714,7 @@ ROUTING_UNIVERSES.forEach(universe => {
                 addRoutes(router, { matching: routeCount, nonMatching: nonMatchingCount });
 
                 // Assert.
-                expect(router.noMatches).toBe(false);
+                expect(router.fallback).toBe(false);
             });
 
             test.each([
@@ -732,7 +732,7 @@ ROUTING_UNIVERSES.forEach(universe => {
                 });
 
                 // Assert.
-                expect(router.noMatches).toBe(true);
+                expect(router.fallback).toBe(true);
             });
         });
     });
