@@ -128,15 +128,12 @@
 			return;
 		}
 		// svelte-ignore ownership_invalid_mutation
-		untrack(() => router.routes)[key] =
-			path instanceof RegExp
-				? { regex: path, and: and as AndUntyped, ignoreForFallback }
-				: {
-						pattern: path,
-						and: and as AndUntyped,
-						ignoreForFallback,
-						caseSensitive
-					};
+		untrack(() => router.routes)[key] = {
+			path,
+			and: and as AndUntyped,
+			ignoreForFallback,
+			caseSensitive
+		};
 		return () => {
 			// svelte-ignore ownership_invalid_mutation
 			delete untrack(() => router.routes)[key];

@@ -3,7 +3,7 @@ import { routePatternsKey, RouterEngine } from "./RouterEngine.svelte.js";
 import { init } from "../init.js";
 import { registerRouter } from "./trace.svelte.js";
 import { location } from "./Location.js";
-import type { State, RouteInfo, ExtendedRoutingOptions, PatternRouteInfo } from "../types.js";
+import type { State, RouteInfo, ExtendedRoutingOptions } from "../types.js";
 import { setupBrowserMocks, addRoutes, ROUTING_UNIVERSES, ALL_HASHES } from "$test/test-utils.js";
 import { resetRoutingOptions, setRoutingOptions } from "./options.js";
 
@@ -312,7 +312,7 @@ ROUTING_UNIVERSES.forEach(universe => {
                 // Arrange.
                 const router = new RouterEngine({ hash: universe.hash });
                 const route: RouteInfo = {
-                    pattern: '/path',
+                    path: '/path',
                     caseSensitive: false,
                 };
                 expect(Object.keys(router.routes).length).toBe(0);
@@ -328,7 +328,7 @@ ROUTING_UNIVERSES.forEach(universe => {
                 // Arrange.
                 const router = new RouterEngine({ hash: universe.hash });
                 const route: RouteInfo = {
-                    pattern: '/path',
+                    path: '/path',
                     caseSensitive: false,
                 };
                 router.routes['route'] = route;
@@ -345,14 +345,14 @@ ROUTING_UNIVERSES.forEach(universe => {
                 // Arrange.
                 const router = new RouterEngine({ hash: universe.hash });
                 const route: RouteInfo = {
-                    pattern: '/path',
+                    path: '/path',
                     caseSensitive: false,
                 };
                 router.routes['route'] = route;
                 expect(Object.keys(router.routes).length).toBe(1);
 
                 // Act.
-                router.routes['route'].pattern = '/other';
+                router.routes['route'].path = '/other';
 
                 // Assert.
                 expect(router[routePatternsKey]().has('route')).toBe(true);
@@ -475,7 +475,7 @@ ROUTING_UNIVERSES.forEach(universe => {
                     // Arrange.
                     const router = new RouterEngine({ hash: universe.hash });
                     const route: RouteInfo = {
-                        pattern,
+                        path: pattern,
                         caseSensitive: false,
                     };
                     router.routes['route'] = route;
@@ -531,7 +531,7 @@ ROUTING_UNIVERSES.forEach(universe => {
                     // Arrange.
                     const router = new RouterEngine({ hash: universe.hash });
                     const route: RouteInfo = {
-                        pattern,
+                        path: pattern,
                         caseSensitive: false,
                     };
                     router.routes['route'] = route;
@@ -645,7 +645,7 @@ ROUTING_UNIVERSES.forEach(universe => {
                     // Arrange.
                     const router = new RouterEngine({ hash: universe.hash });
                     const route: RouteInfo = {
-                        pattern,
+                        path: pattern,
                         caseSensitive: false,
                     };
                     router.routes['route'] = route;
@@ -681,7 +681,7 @@ ROUTING_UNIVERSES.forEach(universe => {
 
                 // Act.
                 router.routes['route'] = {
-                    pattern: '/:one/:two?',
+                    path: '/:one/:two?',
                     caseSensitive: false,
                 };
 

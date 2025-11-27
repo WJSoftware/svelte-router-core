@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, vi, type MockInstance
 import { testWithEffect as test } from "$test/testWithEffect.svelte.js";
 import { ALL_HASHES, ROUTING_UNIVERSES } from "$test/test-utils.js";
 import { init } from "$lib/init.js";
-import type { Hash, PatternRouteInfo, RedirectedRouteInfo } from "$lib/types.js";
+import type { Hash, RouteInfo, RedirectedRouteInfo } from "$lib/types.js";
 import { resolveHashValue } from "./kernel/resolveHashValue.js";
 import { Redirector } from "./Redirector.svelte.js";
 import { location } from "./kernel/Location.js";
@@ -48,27 +48,27 @@ ROUTING_UNIVERSES.forEach((universe) => {
             })[] = [
                     {
                         triggerUrl: '/old/path',
-                        pattern: '/old/path',
+                        path: '/old/path',
                         href: '/new/path',
                         expectedPath: '/new/path',
                         text: "Static pattern; static href"
                     },
                     {
-                        pattern: '/old-path/:id',
+                        path: '/old-path/:id',
                         triggerUrl: '/old-path/123',
                         expectedPath: '/new-path/123',
                         href: (rp) => `/new-path/${rp?.id}`,
                         text: "Parameterized pattern; dynamic href"
                     },
                     {
-                        pattern: '/old-path/*',
+                        path: '/old-path/*',
                         triggerUrl: '/old-path/any/number/of/segments',
                         expectedPath: '/new-path/any/number/of/segments',
                         href: (rp) => `/new-path${rp?.rest}`,
                         text: "Rest parameter; dynamic href"
                     },
                     {
-                        pattern: '/conditional/:id',
+                        path: '/conditional/:id',
                         triggerUrl: '/conditional/123',
                         expectedPath: '/allowed/123',
                         href: (rp) => `/allowed/${rp?.id}`,
@@ -104,7 +104,7 @@ ROUTING_UNIVERSES.forEach((universe) => {
 
             // Act.
             redirector.redirections.push({
-                pattern: '/old-path',
+                path: '/old-path',
                 href: '/new-path',
                 goTo: true,
             });
@@ -123,7 +123,7 @@ ROUTING_UNIVERSES.forEach((universe) => {
 
             // Act.
             redirector.redirections.push({
-                pattern: '/conditional/:id',
+                path: '/conditional/:id',
                 href: '/not-allowed',
                 and: (rp) => (rp?.id as number) > 100,
             });
@@ -143,11 +143,11 @@ ROUTING_UNIVERSES.forEach((universe) => {
             // Act.
             redirector.redirections.push(
                 {
-                    pattern: '/multi/*',
+                    path: '/multi/*',
                     href: '/first-match',
                 },
                 {
-                    pattern: '/multi/test',
+                    path: '/multi/test',
                     href: '/second-match',
                 }
             );
@@ -166,7 +166,7 @@ ROUTING_UNIVERSES.forEach((universe) => {
 
             // Act.
             redirector.redirections.push({
-                pattern: '/test-replace',
+                path: '/test-replace',
                 href: '/replaced',
             });
             flushSync();
@@ -185,7 +185,7 @@ ROUTING_UNIVERSES.forEach((universe) => {
 
             // Act.
             redirector.redirections.push({
-                pattern: '/with-options',
+                path: '/with-options',
                 href: '/target',
                 options: { preserveQuery: true, state: { custom: 'data' } }
             });
@@ -205,7 +205,7 @@ ROUTING_UNIVERSES.forEach((universe) => {
 
             // Add initial redirection that won't match
             redirector.redirections.push({
-                pattern: '/different-path',
+                path: '/different-path',
                 href: '/not-relevant'
             });
             flushSync();
@@ -213,7 +213,7 @@ ROUTING_UNIVERSES.forEach((universe) => {
 
             // Act.
             redirector.redirections.push({
-                pattern: '/test-reactivity',
+                path: '/test-reactivity',
                 href: '/should-redirect'
             });
             flushSync();
@@ -227,14 +227,14 @@ ROUTING_UNIVERSES.forEach((universe) => {
             location.navigate('/test-reactivity', { hash: universe.hash });
             const redirector = new Redirector(universe.hash);
             redirector.redirections.push({
-                pattern: '/different-path',
+                path: '/different-path',
                 href: '/punch-line'
             });
             flushSync();
             navigateSpy.mockClear();
 
             // Act.
-            (redirector.redirections[0] as PatternRouteInfo).pattern = '/test-reactivity';
+            redirector.redirections[0].path = '/test-reactivity';
             flushSync();
 
             // Assert.
@@ -251,7 +251,7 @@ ROUTING_UNIVERSES.forEach((universe) => {
                 // Act.
                 const redirector = new Redirector(universe.hash, { replace: false });
                 redirector.redirections.push({
-                    pattern: '/explicit-hash',
+                    path: '/explicit-hash',
                     href: '/redirected-explicit'
                 });
                 flushSync();
@@ -273,7 +273,7 @@ ROUTING_UNIVERSES.forEach((universe) => {
                 // Act.
                 const redirector = new Redirector(universe.hash, { replace: true });
                 redirector.redirections.push({
-                    pattern: '/hash-resolution-test',
+                    path: '/hash-resolution-test',
                     href: '/hash-resolved'
                 });
                 flushSync();
@@ -299,7 +299,7 @@ ROUTING_UNIVERSES.forEach((universe) => {
                     // Act.
                     const redirector = new Redirector({ replace: false });
                     redirector.redirections.push({
-                        pattern: '/default-hash',
+                        path: '/default-hash',
                         href: '/redirected-default'
                     });
                     flushSync();
@@ -319,7 +319,7 @@ ROUTING_UNIVERSES.forEach((universe) => {
                     // Act.
                     const redirector = new Redirector({}); // Empty options object
                     redirector.redirections.push({
-                        pattern: '/minimal-options',
+                        path: '/minimal-options',
                         href: '/redirected-minimal'
                     });
                     flushSync();
@@ -373,7 +373,7 @@ describe("Options-Only Constructor with Matching Library Defaults", () => {
             // Act.
             const redirector = new Redirector({ replace: false });
             redirector.redirections.push({
-                pattern: '/hash-default-test',
+                path: '/hash-default-test',
                 href: '/hash-redirected'
             });
             flushSync();
@@ -414,7 +414,7 @@ describe("Options-Only Constructor with Matching Library Defaults", () => {
             // Act.
             const redirector = new Redirector({ replace: false });
             redirector.redirections.push({
-                pattern: '/multi-hash-default-test',
+                path: '/multi-hash-default-test',
                 href: '/multi-hash-redirected'
             });
             flushSync();
@@ -461,7 +461,7 @@ describe("Cross-universe Redirection", () => {
 
             // Act.
             redirector.redirections.push({
-                pattern: '/old-path-route',
+                path: '/old-path-route',
                 href: '/new-hash-route',
                 options: { hash: true }
             });
@@ -482,7 +482,7 @@ describe("Cross-universe Redirection", () => {
 
             // Act.
             redirector.redirections.push({
-                pattern: '/old-hash-route',
+                path: '/old-hash-route',
                 href: '/new-path-route',
                 options: { hash: false } // Target path universe
             });
@@ -555,7 +555,7 @@ describe("Cross-universe Redirection", () => {
 
                 // Act.
                 redirector.redirections.push({
-                    pattern: '/old-path-route',
+                    path: '/old-path-route',
                     href: '/new-hash-route',
                     options: { hash: tc.destinationHash }
                 });

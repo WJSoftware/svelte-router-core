@@ -109,8 +109,7 @@ export type RouteChildrenContext<T extends string | RegExp = ""> = RouterChildre
  */
 export type LinkChildrenContext = Omit<RouterChildrenContext, 'rs'> & {
     /**
-     * Holds the route status data for all routes managed by the parent router, if said parent 
-     * exists.
+     * Holds the route status data for all routes managed by the parent router, if said parent exists.
      */
     rs?: RouteStatusRecord | undefined;
 };
@@ -121,9 +120,19 @@ export type LinkChildrenContext = Omit<RouterChildrenContext, 'rs'> & {
 export type AndUntyped = (params: RouteParamsRecord | undefined) => boolean;
 
 /**
- * Defines the core properties of a route definition.
+ * Defines the shape of a route definition.
  */
-export type CoreRouteInfo = {
+export type RouteInfo = {
+    /**
+     * The path to match.  It can contain route parameters in the form of `:paramName` when written as a string, or it 
+     * can be a regular expression.
+     */
+    path?: string | RegExp;
+    /**
+     * Whether the path is case-sensitive (when written as a string only).
+     * @default false
+     */
+    caseSensitive?: boolean;
     /**
      * An optional predicate function that is used to further test if the route should be matched.
      */
@@ -132,49 +141,12 @@ export type CoreRouteInfo = {
      * A Boolean value that determines if the route's match status should be ignored for fallback purposes.
      */
     ignoreForFallback?: boolean;
-}
-
-/**
- * Defines the shape of a route definition that is based on a regular expression.
- */
-export type RegexRouteInfo = CoreRouteInfo & {
-    /**
-     * The regular expression that the URL's pathname must match.
-     * 
-     * Any capturing groups in the regular expression are treated as route parameters.
-     */
-    regex: RegExp;
 };
-
-/**
- * Defines the shape of a route definition that is based on a string pattern.
- */
-export type PatternRouteInfo = CoreRouteInfo & {
-    /**
-     * The pattern that the URL's pathname must match.  It can contain route parameters in the form of `:paramName`.
-     */
-    pattern?: string;
-    /**
-     * Whether the pattern is case-sensitive.
-     * @default false
-     */
-    caseSensitive?: boolean;
-};
-
-/**
- * Defines the shape of a route definition.
- */
-export type RouteInfo = RegexRouteInfo | PatternRouteInfo;
-
-/**
- * Distributes the Omit<T, 'ignoreForFallback'> over unions.
- */
-type NoIgnoreForFallback<T> = T extends any ? Omit<T, 'ignoreForFallback'> : never;
 
 /**
  * Defines the shape of redirection information used by the Redirector class.
  */
-export type RedirectedRouteInfo = NoIgnoreForFallback<RouteInfo> & {
+export type RedirectedRouteInfo = Omit<RouteInfo, 'ignoreForFallback'> & {
     /**
      * The HREF to navigate to (via `location.navigate()` or `location.goTo()`).  It can be a string or a function that 
      * receives the matched route parameters and returns a string.

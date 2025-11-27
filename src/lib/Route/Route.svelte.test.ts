@@ -7,7 +7,8 @@ import { init } from "$lib/init.js";
 import { location } from "$lib/kernel/Location.js";
 import TestRouteWithRouter from "$test/TestRouteWithRouter.svelte";
 import { resetRoutingOptions, setRoutingOptions } from "$lib/kernel/options.js";
-import type { ExtendedRoutingOptions, RouteChildrenContext } from "$lib/types.js";
+import type { ExtendedRoutingOptions, RouteChildrenContext, RouteParamsRecord } from "$lib/types.js";
+import type { RouterEngine } from "$lib/kernel/RouterEngine.svelte.js";
 
 function basicRouteTests(setup: ReturnType<typeof createRouterTestSetup>) {
     beforeEach(() => {
@@ -88,7 +89,7 @@ function routePropsTests(setup: ReturnType<typeof createRouterTestSetup>) {
     test("Should register string pattern route.", async () => {
         // Arrange.
         const { hash, context } = setup;
-        let routerInstance: any;
+        let routerInstance: RouterEngine;
 
         // Act.
         render(TestRouteWithRouter, {
@@ -103,16 +104,16 @@ function routePropsTests(setup: ReturnType<typeof createRouterTestSetup>) {
         });
 
         // Assert.
-        const route = routerInstance?.routes["pattern-route"];
+        const route = routerInstance!?.routes["pattern-route"];
         expect(route).toBeDefined();
-        expect(route.pattern).toBe("/user/:id");
+        expect(route.path).toBe("/user/:id");
     });
 
     test("Should register regex route.", async () => {
         // Arrange.
         const { hash, context } = setup;
         const regex = /^\/user\/(?<id>\d+)$/;
-        let routerInstance: any;
+        let routerInstance: RouterEngine;
 
         // Act.
         render(TestRouteWithRouter, {
@@ -127,9 +128,9 @@ function routePropsTests(setup: ReturnType<typeof createRouterTestSetup>) {
         });
 
         // Assert.
-        const route = routerInstance?.routes["regex-route"];
+        const route = routerInstance!?.routes["regex-route"];
         expect(route).toBeDefined();
-        expect(route.regex).toBe(regex);
+        expect(route.path).toBe(regex);
     });
 
     test("Should register route with and function.", async () => {
@@ -216,7 +217,7 @@ function routeParamsTests(setup: ReturnType<typeof createRouterTestSetup>) {
     test("Should bind route parameters.", async () => {
         // Arrange.
         const { hash, context } = setup;
-        let routerInstance: any;
+        let routerInstance: RouterEngine;
 
         // Act.
         render(TestRouteWithRouter, {
@@ -231,15 +232,15 @@ function routeParamsTests(setup: ReturnType<typeof createRouterTestSetup>) {
         });
 
         // Assert - Route should be registered with parameter pattern
-        const route = routerInstance?.routes["param-route"];
+        const route = routerInstance!?.routes["param-route"];
         expect(route).toBeDefined();
-        expect(route.pattern).toBe("/user/:id");
+        expect(route.path).toBe("/user/:id");
     });
 
     test("Should handle route with rest parameter.", async () => {
         // Arrange.
         const { hash, context } = setup;
-        let routerInstance: any;
+        let routerInstance: RouterEngine;
 
         // Act.
         render(TestRouteWithRouter, {
@@ -254,9 +255,9 @@ function routeParamsTests(setup: ReturnType<typeof createRouterTestSetup>) {
         });
 
         // Assert.
-        const route = routerInstance?.routes["rest-route"];
+        const route = routerInstance!?.routes["rest-route"];
         expect(route).toBeDefined();
-        expect(route.pattern).toBe("/files/*");
+        expect(route.path).toBe("/files/*");
     });
 }
 
@@ -274,7 +275,7 @@ function routeReactivityTests(setup: ReturnType<typeof createRouterTestSetup>) {
         const { hash, context } = setup;
         const initialPath = "/initial";
         const updatedPath = "/updated";
-        let routerInstance: any;
+        let routerInstance: RouterEngine;
 
         const { rerender } = render(TestRouteWithRouter, {
             props: {
@@ -287,8 +288,8 @@ function routeReactivityTests(setup: ReturnType<typeof createRouterTestSetup>) {
             context
         });
 
-        const initialRoute = routerInstance?.routes["reactive-route"];
-        expect(initialRoute?.pattern).toBe(initialPath);
+        const initialRoute = routerInstance!?.routes["reactive-route"];
+        expect(initialRoute?.path).toBe(initialPath);
 
         // Act.
         await rerender({
@@ -300,8 +301,8 @@ function routeReactivityTests(setup: ReturnType<typeof createRouterTestSetup>) {
         });
 
         // Assert.
-        const updatedRoute = routerInstance?.routes["reactive-route"];
-        expect(updatedRoute?.pattern).toBe(updatedPath);
+        const updatedRoute = routerInstance!?.routes["reactive-route"];
+        expect(updatedRoute?.path).toBe(updatedPath);
     });
 
     test("Should update ignoreForFallback when prop changes (rerender).", async () => {
@@ -665,18 +666,17 @@ function routeBindingTestsForUniverse(setup: ReturnType<typeof createRouterTestS
     test("Should bind rest parameter correctly.", async () => {
         // Arrange.
         const { hash, context } = setup;
-        let capturedParams: any;
+        let capturedParams: RouteParamsRecord;
         const paramsSetter = vi.fn((value) => { capturedParams = value; });
 
         // Act.
-        render(TestRouteWithRouter, {
+        render(Route, {
             props: {
                 hash,
-                routeKey: "test-route",
-                routePath: "/files/*",
+                key: "test-route",
+                path: "/files/*",
                 get params() { return capturedParams; },
                 set params(value) { paramsSetter(value); },
-                children: createTestSnippet('<div>File path: {params?.rest}</div>')
             },
             context
         });
@@ -692,10 +692,10 @@ function routeBindingTestsForUniverse(setup: ReturnType<typeof createRouterTestS
             return "http://example.com/files/documents/readme.txt";
         })();
         location.url.href = url;
-        await vi.waitFor(() => { });
+        flushSync();
 
         // Assert.
-        expect(paramsSetter).toHaveBeenCalled();
+        expect(paramsSetter).toHaveBeenCalledTimes(2);
 
         // Multi-hash routing (MHR) has different behavior and may not work with simple URLs in tests
         if (ru.text === 'MHR') {
@@ -703,7 +703,7 @@ function routeBindingTestsForUniverse(setup: ReturnType<typeof createRouterTestS
             return;
         }
 
-        expect(capturedParams).toEqual({ rest: "/documents/readme.txt" });
+        expect(capturedParams!).toEqual({ rest: "/documents/readme.txt" });
     });
 }
 

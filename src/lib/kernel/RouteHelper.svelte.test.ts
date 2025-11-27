@@ -162,7 +162,7 @@ describe("RouteHelper", () => {
 
             test("Should set ignoreForFallback to false by default when not provided.", () => {
                 // Arrange
-                const routeInfo = { pattern: "/test" };
+                const routeInfo = { path: "/test" };
                 
                 // Act
                 const result = routeHelper.parseRoutePattern(routeInfo);
@@ -192,7 +192,7 @@ describe("RouteHelper", () => {
                 { pattern: "/api/v1/users", expectedRegex: "^\\/api\\/v1\\/users$", description: "multi-segment path" }
             ])("Should create correct regex for $description .", ({ pattern, expectedRegex }) => {
                 // Arrange
-                const routeInfo = { pattern };
+                const routeInfo = { path: pattern };
                 
                 // Act
                 const result = routeHelper.parseRoutePattern(routeInfo);
@@ -210,7 +210,7 @@ describe("RouteHelper", () => {
                 { pattern: "/user-:id/profile", expectedRegex: "^\\/user-(?<id>[^/]+)\\/profile$", description: "parameter with prefix and suffix" }
             ])("Should create correct regex for $description .", ({ pattern, expectedRegex }) => {
                 // Arrange
-                const routeInfo = { pattern };
+                const routeInfo = { path: pattern };
                 
                 // Act
                 const result = routeHelper.parseRoutePattern(routeInfo);
@@ -226,7 +226,7 @@ describe("RouteHelper", () => {
                 { pattern: "/:category?/:id", expectedRegex: "^\\/?(?:(?<category>[^/]+))?\\/(?<id>[^/]+)$", description: "optional then required parameters" }
             ])("Should create correct regex for $description .", ({ pattern, expectedRegex }) => {
                 // Arrange
-                const routeInfo = { pattern };
+                const routeInfo = { path: pattern };
                 
                 // Act
                 const result = routeHelper.parseRoutePattern(routeInfo);
@@ -241,7 +241,7 @@ describe("RouteHelper", () => {
                 { pattern: "/*", expectedRegex: "^(?<rest>.*)$", description: "root rest parameter" }
             ])("Should create correct regex for $description .", ({ pattern, expectedRegex }) => {
                 // Arrange
-                const routeInfo = { pattern };
+                const routeInfo = { path: pattern };
                 
                 // Act
                 const result = routeHelper.parseRoutePattern(routeInfo);
@@ -255,7 +255,7 @@ describe("RouteHelper", () => {
                 { caseSensitive: false, expectedFlags: "i", description: "case insensitive" }
             ])("Should create regex with correct flags for $description .", ({ caseSensitive, expectedFlags }) => {
                 // Arrange
-                const routeInfo = { pattern: "/test", caseSensitive };
+                const routeInfo = { path: "/test", caseSensitive };
                 
                 // Act
                 const result = routeHelper.parseRoutePattern(routeInfo);
@@ -288,7 +288,7 @@ describe("RouteHelper", () => {
                 { basePath: "/api/", pattern: "/users/", expectedRegex: "^\\/api\\/users$", description: "trailing slashes handled" }
             ])("Should join base path correctly for $description .", ({ basePath, pattern, expectedRegex }) => {
                 // Arrange
-                const routeInfo = { pattern };
+                const routeInfo = { path: pattern };
                 
                 // Act
                 const result = routeHelper.parseRoutePattern(routeInfo, basePath);
@@ -310,7 +310,7 @@ describe("RouteHelper", () => {
                 { pattern: "/back\\slash", expectedRegex: "^\\/back\\\\slash$", description: "backslash" }
             ])("Should escape $description correctly .", ({ pattern, expectedRegex }) => {
                 // Arrange
-                const routeInfo = { pattern };
+                const routeInfo = { path: pattern };
                 
                 // Act
                 const result = routeHelper.parseRoutePattern(routeInfo);

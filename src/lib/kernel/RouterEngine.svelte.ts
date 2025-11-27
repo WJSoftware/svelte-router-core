@@ -1,4 +1,4 @@
-import type { AndUntyped, Hash, RegexRouteInfo, RouteInfo, RouteStatus } from "../types.js";
+import type { AndUntyped, Hash, RouteInfo, RouteStatus } from "../types.js";
 import { traceOptions, registerRouter, unregisterRouter } from "./trace.svelte.js";
 import { location } from "./Location.js";
 import { routingOptions } from "./options.js";
@@ -30,10 +30,6 @@ export type RouterEngineOptions = {
 
 function isRouterEngine(obj: unknown): obj is RouterEngine {
     return obj instanceof RouterEngine;
-}
-
-function routeInfoIsRegexInfo(info: unknown): info is RegexRouteInfo {
-    return (info as RegexRouteInfo).regex instanceof RegExp;
 }
 
 /**
@@ -75,12 +71,7 @@ export class RouterEngine {
      * This is done separately so it is memoized based on the route definitions and the base path only.
      */
     #routePatterns = $derived(Object.entries(this.routes).reduce((map, [key, route]) => {
-        map.set(
-            key, routeInfoIsRegexInfo(route) ?
-            { regex: route.regex, and: route.and, ignoreForFallback: !!route.ignoreForFallback } :
-            this.#routeHelper.parseRoutePattern(route, this.basePath)
-        );
-        return map;
+        return map.set(key, this.#routeHelper.parseRoutePattern(route, this.basePath));
     }, new Map<string, { regex?: RegExp; and?: AndUntyped; ignoreForFallback: boolean; }>()));
 
     [routePatternsKey]() {

@@ -1,5 +1,5 @@
 import { joinPaths } from "$lib/public-utils.js";
-import type { AndUntyped, Hash, PatternRouteInfo, RouteParamsRecord } from "$lib/types.js";
+import type { AndUntyped, Hash, RouteInfo, RouteParamsRecord } from "$lib/types.js";
 import { noTrailingSlash } from "$lib/utils.js";
 import { location } from "./Location.js";
 
@@ -53,14 +53,15 @@ export class RouteHelper {
      * @param routeInfo Pattern route information to parse.
      * @returns An object with the regular expression, the optional predicate function, and the ignoreForFallback flag.
      */
-    parseRoutePattern(routeInfo: PatternRouteInfo, basePath?: string): { regex?: RegExp; and?: AndUntyped; ignoreForFallback: boolean; } {
-        if (!routeInfo.pattern) {
+    parseRoutePattern(routeInfo: RouteInfo, basePath?: string): { regex?: RegExp; and?: AndUntyped; ignoreForFallback: boolean; } {
+        if (typeof routeInfo.path !== 'string') {
             return {
+                regex: routeInfo.path,
                 and: routeInfo.and,
                 ignoreForFallback: !!routeInfo.ignoreForFallback
             }
         }
-        const fullPattern = joinPaths(basePath || '/', routeInfo.pattern === '/' ? '' : routeInfo.pattern);
+        const fullPattern = joinPaths(basePath || '/', routeInfo.path === '/' ? '' : routeInfo.path);
         const escapedPattern = escapeRegExp(fullPattern);
         let regexPattern = escapedPattern.replace(identifierRegex, (_match, startingSlash, paramName, optional, offset) => {
             let regex = paramValueRegex.replace(paramNamePlaceholder, paramName);
