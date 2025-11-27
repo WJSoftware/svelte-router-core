@@ -457,7 +457,6 @@ describe("Cross-universe Redirection", () => {
             const redirector = new Redirector(false); // Monitor path universe
             flushSync();
             navigateSpy.mockClear();
-            console.debug('Location before redirection:', location.url.href);
 
             // Act.
             redirector.redirections.push({

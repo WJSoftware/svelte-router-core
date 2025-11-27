@@ -177,7 +177,6 @@ describe("LocationLite", () => {
             const currentPath = "/current/path";
             window.location.href = `${currentPath}?some=value&plus=another`;
             location.url.href = window.location.href;
-            console.debug('Path: ', window.location.pathname);
 
             // Act.
             location.goTo('', { preserveQuery: true });
