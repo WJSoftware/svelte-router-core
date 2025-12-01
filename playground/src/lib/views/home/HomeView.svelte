@@ -15,6 +15,7 @@
 	import pathRoutingExample from './code-samples/path-routing-example.txt?raw';
 	import hashRoutingExample from './code-samples/hash-routing-example.txt?raw';
 	import multiHashExample from './code-samples/multi-hash-example.txt?raw';
+	import themeSvelte from '../../state/theme.svelte';
 
 	getTitleContext().current = '';
 </script>
@@ -191,7 +192,11 @@
 							matched and processed.
 						</p>
 						<div class="table-responsive-lg">
-							<RouterTrace class="table table-striped table-hover" />
+							<RouterTrace
+								class="table table-striped table-hover"
+								buttonClass="btn btn-sm btn-outline-primary"
+								darkTheme={themeSvelte.current === 'dark'}
+							/>
 						</div>
 					</CardBody>
 				</Card>

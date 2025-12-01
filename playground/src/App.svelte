@@ -21,6 +21,7 @@
 	import HrInCodeView from './lib/views/hash-routing/InCodeView.svelte';
 	import RedirectedView from './lib/views/redirected/RedirectedView.svelte';
 	import { routingMode } from './lib/hash-routing';
+	import themeSvelte from './lib/state/theme.svelte';
 
 	initTitleContext();
 	let showNavTooltip = $state(false);
@@ -98,7 +99,11 @@
 				</main>
 				{#if !rs.home.match}
 					<div class="table-responsive-lg">
-						<RouterTrace class="table table-striped table-hover" />
+						<RouterTrace
+							class="table table-striped table-hover"
+							buttonClass="btn btn-sm btn-outline-primary"
+							darkTheme={themeSvelte.current === 'dark'} 
+						/>
 					</div>
 				{/if}
 			{/snippet}

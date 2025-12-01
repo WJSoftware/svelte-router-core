@@ -3,7 +3,7 @@
 	import { routePatternsKey, RouterEngine } from '$lib/kernel/RouterEngine.svelte.js';
 	import { resolveHashValue } from '$lib/kernel/resolveHashValue.js';
 	import { getRouterContext } from '$lib/Router/Router.svelte';
-	import type { HTMLTableAttributes } from 'svelte/elements';
+	import type { ClassValue, HTMLTableAttributes } from 'svelte/elements';
 	import { assertAllowedRoutingMode } from '$lib/utils.js';
 	import type { Hash } from '$lib/types.js';
 
@@ -43,13 +43,28 @@
 		 * Sets the position of the router engine's children menu.
 		 */
 		childrenMenuPosition?: 'top' | 'bottom';
+		/**
+		 * Enables or disables the dark theme for the component.
+		 */
+		darkTheme?: boolean;
+		/**
+		 * Shows or hides a button capable of toggling the component's theme between light and dark themes.
+		*/
+		themeBtn?: boolean;
+		/**
+		 * Overrides the default CSS class of all buttons in the component.
+		 */
+		buttonClass?: ClassValue;
 	};
 
 	let {
 		hash,
 		router = $bindable(),
 		childrenMenuPosition = 'top',
+		darkTheme = false,
+		themeBtn = false,
 		class: cssClass,
+		buttonClass,
 		...restProps
 	}: Props = $props();
 
@@ -63,25 +78,60 @@
 			);
 		}
 	}
+	const routingUniverse = $derived(
+		typeof router.resolvedHash === 'string'
+			? `Named: ${router.resolvedHash}`
+			: router.resolvedHash
+				? 'Hash'
+				: 'Path'
+	);
 	const routePatterns = $derived(router[routePatternsKey]());
-	// Child routers picker snippet
 	const childRouterRefs = $derived(traceOptions.routerHierarchy ? getAllChildRouters(router) : []);
 	let showChildrenMenu = $state(false);
+	const btnClass = $derived(buttonClass ?? 'button');
+
+	function switchToRouter(targetRouter: RouterEngine) {
+		router = targetRouter;
+		showChildrenMenu = false;
+	}
 </script>
 
+{#snippet routerId(r: RouterEngine | undefined, noBold = false)}
+	{#if r}
+		<span class={['router-id', noBold && 'no-bold']}>{r.id ?? '(no ID)'}</span>
+		<span class="dimmed">{r.basePath}</span>
+	{:else}
+		(router unavailable)
+	{/if}
+{/snippet}
+
 {#snippet childRoutersPicker()}
-	<div class="children-picker">
-		<button type="button" onclick={() => (showChildrenMenu = !showChildrenMenu)}>
-			Children: {childRouterRefs.length}
+	<div data-children-picker>
+		<button
+			type="button"
+			class={btnClass}
+			disabled={childRouterRefs.length === 0}
+			onclick={() => (showChildrenMenu = !showChildrenMenu)}
+		>
+			Children: <span class="router-property">{childRouterRefs.length}</span>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 200 200"
+				style="width: 1em; height: 1em;"
+			>
+				<g>
+					<path d="M50,50 l100,0 l-50,100 Z" fill="currentColor" />
+				</g>
+			</svg>
 		</button>
 		{#if showChildrenMenu}
-			<ul class={['children-menu', `children-menu-${childrenMenuPosition}`]}>
+			<ul class={[`children-menu-${childrenMenuPosition}`]} data-menu>
 				{#each childRouterRefs as ref}
 					{@const childRouter = ref.deref()}
 					{#if childRouter}
 						<li>
-							<button type="button">
-								<strong>{childRouter.id ?? '(no ID)'}</strong>&nbsp;-&nbsp;{childRouter.basePath}
+							<button type="button" onclick={() => switchToRouter(childRouter)}>
+								{@render routerId(childRouter)}
 							</button>
 						</li>
 					{:else}
@@ -95,23 +145,91 @@
 	</div>
 {/snippet}
 
-<table class={[cssClass ?? 'minimal']} {...restProps}>
+<table
+	class={[
+		cssClass ?? 'rt-stock',
+		darkTheme && 'dark'
+	]}
+	{...restProps}
+>
 	<caption>
 		<div>
 			<div>
-				Router ID: <span class="router-property">{router.id ?? '(no ID)'}</span>
+				Router ID: <span class="router-property">{router?.id ?? '(no ID)'}</span>
 			</div>
 			<div>
-				Base Path: <span class="router-property">{router.basePath}</span>
+				Universe: <span class="router-property">{routingUniverse}</span>
 			</div>
-			<div>
-				Test Path: <span class="router-property">{router.testPath}</span>
-			</div>
-			<div>
-				{#if traceOptions.routerHierarchy && childRouterRefs.length > 0}
-					{@render childRoutersPicker()}
+			<button
+				type="button"
+				class={btnClass}
+				data-parent
+				disabled={!router?.parent}
+				onclick={() => switchToRouter(router?.parent!)}
+			>
+				{#if router?.parent}
+					Parent: <span class="router-property">{@render routerId(router.parent, true)}</span>
+				{:else}
+					(No parent)
 				{/if}
+			</button>
+			{#if traceOptions.routerHierarchy}
+				{@render childRoutersPicker()}
+			{/if}
+			<div data-end>
+				Base Path: <span class="router-property">{router?.basePath}</span>
 			</div>
+			<div>
+				Test Path: <span class="router-property">{router?.testPath}</span>
+			</div>
+			<div>
+				Fallback: <span class="router-property">{router?.fallback}</span>
+			</div>
+			{#if themeBtn}
+				<div>
+					<button
+						class={btnClass}
+						type="button"
+						aria-label="Switch theme on the RouterTrace component."
+						onclick={() => (darkTheme = !darkTheme)}
+					>
+						{#if darkTheme}
+							<!-- Moon icon -->
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								style="width: 1em; height: 1em;"
+								fill="currentColor"
+							>
+								<g>
+									<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+								</g>
+							</svg>
+						{:else}
+							<!-- Sun icon -->
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 200 200"
+								style="width: 1em; height: 1em;"
+							>
+								<g>
+									<circle cx="100" cy="100" r="35" fill="currentColor" />
+									<g stroke="currentColor" stroke-width="8" stroke-linecap="round">
+										<line x1="100" y1="30" x2="100" y2="45" />
+										<line x1="100" y1="155" x2="100" y2="170" />
+										<line x1="170" y1="100" x2="155" y2="100" />
+										<line x1="45" y1="100" x2="30" y2="100" />
+										<line x1="148.5" y1="51.5" x2="138.9" y2="61.1" />
+										<line x1="61.1" y1="138.9" x2="51.5" y2="148.5" />
+										<line x1="148.5" y1="148.5" x2="138.9" y2="138.9" />
+										<line x1="61.1" y1="61.1" x2="51.5" y2="51.5" />
+									</g>
+								</g>
+							</svg>
+						{/if}
+					</button>
+				</div>
+			{/if}
 		</div>
 	</caption>
 	<thead>
@@ -124,19 +242,19 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#each Object.entries(router.routeStatus) as [key, status]}
+		{#each Object.entries(router?.routeStatus || {}) as [key, status]}
 			<tr>
 				<td>{key}</td>
-				{#if typeof router.routes[key].path === 'string'}
+				{#if typeof router?.routes[key].path === 'string'}
 					<td>
-						<pre>{router.routes[key].path}</pre>
+						<pre>{router?.routes[key].path}</pre>
 					</td>
 				{/if}
-				<td colspan={typeof router.routes[key].path === 'string' ? 1 : 2}>
+				<td colspan={typeof router?.routes[key].path === 'string' ? 1 : 2}>
 					<code>{routePatterns.get(key)?.regex}</code>
 				</td>
 				<td>
-					<span class="minimal-icon" class:error={!status.match}>
+					<span class="match-icon" class:error={!status.match}>
 						{#if status.match}
 							✔
 						{:else}
@@ -162,94 +280,166 @@
 </table>
 
 <style lang="scss">
-	.minimal {
+	table {
+		--rt-grid-color: #ddd;
+		--rt-header-bg-color: #f2f2f2;
+		--rt-bg-color: #fafafa;
+		--rt-alternate-bg-color: #f5f5f5;
+		--rt-hover-bg-color: #e2e2e2;
+
+		&.dark {
+			--rt-grid-color: #353535;
+			--rt-header-bg-color: #202020;
+			--rt-bg-color: #303030;
+			--rt-alternate-bg-color: #404040;
+			--rt-hover-bg-color: #505050;
+		}
+	}
+
+	.rt-stock {
 		width: 100%;
 		border-collapse: collapse;
+		background-color: var(--rt-bg-color);
 
 		& th,
 		& td {
-			border: 1px solid #ddd;
+			border: 1px solid var(--rt-grid-color);
 			padding: 8px;
 		}
 
 		& th {
-			background-color: #f2f2f2;
+			background-color: var(--rt-header-bg-color);
 			text-align: left;
 		}
 
 		& tr:nth-child(even) {
-			background-color: #f9f9f9;
+			background-color: var(--rt-alternate-bg-color);
 		}
 
 		& tr:hover {
-			background-color: #f1f1f1;
+			background-color: var(--rt-hover-bg-color);
 		}
 
-		& td:has(> span.minimal-icon) {
+		& td:has(> span.match-icon) {
 			text-align: center;
 		}
 	}
 
-	caption > div {
-		display: flex;
-		flex-direction: row;
-		gap: 2em;
-		justify-content: start;
-		& > div:last-of-type {
-			margin-left: auto;
+	caption {
+		--rtc-button-bg-color: firebrick;
+		--rtc-button-hover-bg-color: rgb(201, 38, 38);
+		--rtc-button-disabled-bg-color: #ffb8b8;
+		--rtc-button-text-color: #fafafa;
+		--rtc-prop-bg-color: 0, 0, 0;
+		--rtc-prop-bg-opacity: 0.15;
+		--rtc-prop-border-color: 0, 0, 0;
+		--rtc-prop-border-opacity: 0.5;
+
+		.dark & {
+			--rtc-prop-bg-color: 255, 255, 255;
+			--rtc-prop-border-color: 255, 255, 255;
+			--rtc-button-bg-color: darkred;
+			--rtc-button-hover-bg-color: rgb(113, 2, 2);
+			--rtc-button-disabled-bg-color: rgb(66, 37, 37);
 		}
-		& .children-picker {
+
+		padding: 0.5em;
+		background-color: var(--rt-header-bg-color);
+
+		& > div {
+			display: flex;
+			flex-direction: row;
+			gap: 1em;
+			justify-content: start;
+			align-items: baseline;
+
+			& > div[data-end] {
+				margin-left: auto;
+			}
+		}
+
+		& [data-children-picker] {
 			position: relative;
 
-			& button {
-				border: none;
-				border-radius: 4px;
-			}
-
-			& .children-menu {
+			& > [data-menu] {
 				position: absolute;
 				left: 0;
 				width: max-content;
-				background-color: #f8f9fa;
-				border: 1px solid #ddd;
-				border-radius: 4px;
-				padding: 0.5em 0;
 				z-index: 1;
 				display: flex;
 				flex-direction: column;
 				gap: 0.5em;
-				box-shadow: 0.5em 0.5em 1em rgba(0, 0, 0, 0.1);
+				background-color: var(--rt-header-bg-color);
+				border: 1px solid rgba(var(--rtc-prop-border-color), var(--rtc-prop-border-opacity));
+				border-radius: 4px;
+				padding: 0.5em 0;
+				box-shadow: 0.5em 0.5em 0.35em rgba(var(--rtc-prop-border-color), 0.1);
+				margin-bottom: 0.5em;
 
 				& li {
 					list-style: none;
 					& button {
 						border: none;
 						background-color: transparent;
-						padding: 0.25em;
+						padding: 0.2em 0.7em;
 					}
 				}
 
 				& li:hover,
-				& li button:hover {
-					background-color: #e9ecef;
-				}
-
-				&.children-menu-top {
-					bottom: 0;
-				}
-
-				&.children-menu-bottom {
-					top: 100%;
+				& li button:hover,
+				& li button:focus {
+					background-color: var(--rt-hover-bg-color);
 				}
 			}
 		}
 	}
 
+	.button {
+		border: none;
+		border-radius: 4px;
+		padding: 0.25em 0.65em;
+		background-color: var(--rtc-button-bg-color);
+		color: var(--rtc-button-text-color);
+
+		&:hover:not(:disabled),
+		&:focus {
+			background-color: var(--rtc-button-hover-bg-color);
+		}
+
+		&:disabled {
+			background-color: var(--rtc-button-disabled-bg-color);
+			cursor: not-allowed;
+		}
+	}
+
+	.children-menu-top {
+		bottom: 100%;
+	}
+
+	.children-menu-bottom {
+		top: 100%;
+	}
+
 	.router-property {
-		font-weight: bold;
+		font-weight: bolder;
+		border-radius: 0.2em;
+		background-color: rgba(var(--rtc-prop-bg-color), var(--rtc-prop-bg-opacity));
+		padding: 0.1em 0.7em;
+		border: rgba(var(--rtc-prop-border-color), var(--rtc-prop-border-opacity)) 1px dashed;
 	}
 
 	.error {
 		color: #dc3545;
+	}
+
+	.router-id {
+		font-weight: bolder;
+		&.no-bold {
+			font-weight: inherit;
+		}
+	}
+
+	.dimmed {
+		opacity: 0.45;
 	}
 </style>

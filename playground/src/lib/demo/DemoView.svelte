@@ -7,6 +7,7 @@
 	import LocationFeaturesView from './LocationFeaturesView.svelte';
 	import RouterEngineFeaturesView from './RouterEngineFeaturesView.svelte';
 	import ApiFeaturesView from './ApiFeaturesView.svelte';
+	import themeSvelte from '../state/theme.svelte';
 
 	type Props = {
 		hash?: boolean | string;
@@ -21,7 +22,12 @@
 	<div class="container mt-3">
 		<div class="row">
 			<div class="col-xl-4">
-				<Route {hash} key="router" path="/*" and={(params) => params?.rest === '/router' || !params?.rest }>
+				<Route
+					{hash}
+					key="router"
+					path="/*"
+					and={(params) => params?.rest === '/router' || !params?.rest}
+				>
 					<RouterFeaturesView />
 				</Route>
 				<Route {hash} key="route" path="/route">
@@ -42,7 +48,12 @@
 			</div>
 			<div class="col-xl-8">
 				<div class="table-responsive-lg">
-					<RouterTrace {hash} class="table table-striped table-hover" />
+					<RouterTrace
+						{hash}
+						class="table table-striped table-hover"
+						buttonClass="btn btn-sm btn-outline-primary"
+						darkTheme={themeSvelte.current === 'dark'}
+					/>
 				</div>
 			</div>
 		</div>

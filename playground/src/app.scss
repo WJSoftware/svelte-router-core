@@ -2,19 +2,3 @@
 
 $bootstrap-icons-font-dir: 'bootstrap-icons/font/fonts';
 @import 'bootstrap-icons/font/bootstrap-icons';
-
-.router-property {
-    border-radius: 0.5em;
-    background-color: var(--bs-gray-200);
-    padding: 0.1em 0.7em;
-}
-
-[data-bs-theme=dark] .router-property {
-    background-color: var(--bs-gray-dark);
-}
-
-@media (prefers-color-scheme: dark) {
-    .router-property {
-        background-color: var(--bs-gray-dark);
-    }
-}
