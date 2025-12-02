@@ -7,11 +7,11 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/WJSoftware/svelte-router-core.git"
+		"url": "git+https://github.com/WJSoftware/svelte-router.git"
 	},
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/WJSoftware/svelte-router-core/issues"
+		"url": "https://github.com/WJSoftware/svelte-router/issues"
 	},
 	"description": "Next-level routing for Svelte and Sveltekit",
 	"scripts": {
@@ -65,7 +65,8 @@
 		"router",
 		"svelte-router",
 		"spa",
-		"micro-frontend"
+		"micro-frontend",
+		"pwa"
 	],
 	"peerDependencies": {
 		"svelte": "^5.31.0"
