@@ -1,4 +1,4 @@
-# <img src="src/lib/logo/logo-48.svg" alt="Svelte Router Logo" width="48" height="48" align="left">&nbsp;&nbsp;@svelte-router/core
+# <img src="src/lib/logo/logo-48.svg" alt="Svelte Router Logo" width="48" height="48" align="left">&nbsp;Svelte Router
 
 > Next-level routing for Svelte and Sveltekit.
 
@@ -154,6 +154,6 @@ The best practice is to render the links inside a router's hierarchy, but this i
 ```
 ---
 
-[Issues Here](https://github.com/WJSoftware/svelte-router-core/issues)
+[Issues Here](https://github.com/WJSoftware/svelte-router/issues)
 
-[Questions, Polls, Show & Tell, etc. Here](https://github.com/WJSoftware/svelte-router-core/discussions)
+[Questions, Polls, Show & Tell, etc. Here](https://github.com/WJSoftware/svelte-router/discussions)
