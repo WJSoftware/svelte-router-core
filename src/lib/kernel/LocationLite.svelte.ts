@@ -50,11 +50,12 @@ export class LocationLite implements Location {
         return this.#historyApi.url;
     }
 
-    getState(hash: Hash) {
-        if (typeof hash === 'string') {
-            return this.#historyApi.state?.hash[hash];
+    getState(hash?: Hash | undefined) {
+        const resolvedHash = resolveHashValue(hash);
+        if (typeof resolvedHash === 'string') {
+            return this.#historyApi.state?.hash[resolvedHash];
         }
-        if (hash) {
+        if (resolvedHash) {
             return this.#historyApi.state?.hash.single;
         }
         return this.#historyApi.state?.path;

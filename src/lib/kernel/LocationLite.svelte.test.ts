@@ -21,6 +21,7 @@ describe("LocationLite", () => {
         location.dispose();
         setLocation(null);
         browserMocks.cleanup();
+        resetRoutingOptions(); // Reset routing options to prevent test interference
     });
 
     describe("constructor", () => {
@@ -127,6 +128,47 @@ describe("LocationLite", () => {
             expect(location.getState(ALL_HASHES.path)).toBe(pathState);
             expect(location.getState(ALL_HASHES.single)).toBe(singleHashState);
             expect(location.getState('abc')).toBe(abcHashState);
+        });
+        test.each([
+            {
+                defaultHash: ALL_HASHES.path,
+                hashMode: 'single' as const,
+                expectedStateValue: 'pathData',
+                scenario: 'path routing'
+            },
+            {
+                defaultHash: ALL_HASHES.single,
+                hashMode: 'single' as const,
+                expectedStateValue: 'singleHashData',
+                scenario: 'single hash routing'
+            },
+            {
+                defaultHash: 'customHash',
+                hashMode: 'multi' as const,
+                expectedStateValue: 'customHashData',
+                scenario: 'multi-hash routing with custom hash ID'
+            }
+        ])("Should return correct state for undefined hash parameter with $scenario defaultHash.", (tc) => {
+            // Arrange.
+            const testState = {
+                path: tc.defaultHash === ALL_HASHES.path ? tc.expectedStateValue : 'xxx',
+                hash: {
+                    single: tc.defaultHash === ALL_HASHES.single ? tc.expectedStateValue : 'xxx',
+                    [typeof tc.defaultHash === 'string' ? tc.defaultHash : '']: tc.defaultHash === 'customHash' ? tc.expectedStateValue : 'xxx',
+                }
+            };
+            browserMocks.setState(testState);
+            
+            // Set the routing options
+            resetRoutingOptions();
+            setRoutingOptions({ defaultHash: tc.defaultHash, hashMode: tc.hashMode });
+            location = new LocationLite();
+
+            // Act.
+            const result = location.getState(undefined);
+
+            // Assert.
+            expect(result).toBe(tc.expectedStateValue);
         });
     });
     describe('goTo', () => {

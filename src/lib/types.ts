@@ -248,10 +248,11 @@ export interface Location {
      */
     readonly hashPaths: Record<string, string>;
     /**
-     * Gets the current state object associated with the current URL that responds to the given hash value.
+     * Gets the current state object associated with the current URL that responds to the given hash value.  If no hash 
+     * value is given, it returns the state associated with the value of the `defaultHash` routing option.
      * @param hash The hash value to get the state for.
      */
-    getState(hash: Hash): any;
+    getState(hash?: Hash | undefined): any;
     /**
      * Navigates to the specified URL as it is given.
      * 
