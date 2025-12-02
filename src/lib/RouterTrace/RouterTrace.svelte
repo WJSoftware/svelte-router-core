@@ -428,6 +428,13 @@
 		border: rgba(var(--rtc-prop-border-color), var(--rtc-prop-border-opacity)) 1px dashed;
 	}
 
+	/*
+		The (✔) emoji may have a hardcoded color in some systems or fonts.  Don't expect it to always be green.
+	*/
+	.match-icon {
+		color: rgb(10, 149, 10);
+	}
+
 	.error {
 		color: #dc3545;
 	}
