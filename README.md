@@ -63,7 +63,7 @@ de-synchronizing state.
 ### Install the package
 
 ```bash
-npm i @svelte-router/core@beta # For now, until v1.0.0 is released
+npm i @svelte-router/core
 ```
 
 ### Initialize the Library
