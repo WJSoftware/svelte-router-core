@@ -14,8 +14,10 @@
 [@svelte-router/kit](https://github.com/WJSoftware/svelte-router-kit)
 + **Electron support**:  Works with Electron (all routing modes)
 + **Reactivity-based**:  All data is reactive, reducing the need for events and imperative programming.
-+ **⚡NEW! URL Redirection**:  Use `Redirector` instances to route users from deprecated URL's to new URL's, even across 
++ **URL Redirection**:  Use `Redirector` instances to route users from deprecated URL's to new URL's, even across 
 routing universes.
++ **Dynamic Routes**:  Define routes in JavaScript from any dynamic source, even fetched data.
++ **Fully Typed**:  Built-in TypeScript, even for route parameters.
 
 **Components**:
 
@@ -34,6 +36,7 @@ routing universes.
 + `location.getState()`
 + `RouterEngine.routes`
 + `RouterEngine.routeStatus`
++ `RouterEngine.basePath`
 
 All data is a Svelte signal.  Add routes dynamically or reactively, change route conditions on the fly, add more pieces 
 of user interface on-demand, etc.  All works reactively.
