@@ -65,6 +65,7 @@ export class RouterEngine {
      * @default '/'
      */
     #basePath = $state<string>('/');
+    #calcBasePath = $derived.by(() => joinPaths(this.#parent?.basePath || '/', this.#basePath));
     /**
      * Calculates the route patterns to be used for matching the current URL.
      * 
@@ -166,7 +167,7 @@ export class RouterEngine {
      * The base path is the segments of the URL that must be present in order to match a route.
      */
     get basePath() {
-        return joinPaths(this.#parent?.basePath || '/', this.#basePath);
+        return this.#calcBasePath;
     }
     set basePath(value: string) {
         this.#basePath = value || '/';
