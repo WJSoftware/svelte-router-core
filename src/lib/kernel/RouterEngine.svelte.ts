@@ -1,4 +1,4 @@
-import type { AndUntyped, Hash, RouteInfo, RouteStatus } from "../types.js";
+import type { AndUntyped, Hash, RouteInfo, RouteStatus, RouteStatusRecord } from "../types.js";
 import { traceOptions, registerRouter, unregisterRouter } from "./trace.svelte.js";
 import { location } from "./Location.js";
 import { routingOptions } from "./options.js";
@@ -47,7 +47,7 @@ export class RouterEngine {
     #routeHelper;
     #cleanup = false;
     #parent: RouterEngine | undefined;
-    resolvedHash: Hash;
+    #resolvedHash: Hash;
     /**
      * Gets or sets the router's identifier.  This is displayed by the `RouterTracer` component.
      */
@@ -79,14 +79,10 @@ export class RouterEngine {
         return this.#routePatterns;
     }
 
-    /**
-     * Gets the test path this router engine uses to test route paths.  Its value depends on the router's routing mode 
-     * (universe).
-     */
-    readonly testPath = $derived.by(() => this.#routeHelper.testPath);
+    #testPath = $derived.by(() => this.#routeHelper.testPath);
 
     #routeStatusData = $derived.by(() => {
-        const routeStatus = {} as Record<string, RouteStatus>;
+        const routeStatus = {} as RouteStatusRecord;
         let fallback = true;
         for (let routeKey of Object.keys(this.routes)) {
             const pattern = this.#routePatterns.get(routeKey)!;
@@ -122,24 +118,24 @@ export class RouterEngine {
             throw new Error("The routing library hasn't been initialized.  Execute init() before creating routers.");
         }
         if (isRouterEngine(parentOrOpts)) {
-            this.resolvedHash = parentOrOpts.resolvedHash;
+            this.#resolvedHash = parentOrOpts.resolvedHash;
             this.#parent = parentOrOpts;
         }
         else {
             this.#parent = parentOrOpts?.parent;
-            this.resolvedHash = this.#parent && parentOrOpts?.hash === undefined ? this.#parent.resolvedHash : resolveHashValue(parentOrOpts?.hash);
-            if (this.#parent && this.resolvedHash !== this.#parent.resolvedHash) {
+            this.#resolvedHash = this.#parent && parentOrOpts?.hash === undefined ? this.#parent.resolvedHash : resolveHashValue(parentOrOpts?.hash);
+            if (this.#parent && this.#resolvedHash !== this.#parent.resolvedHash) {
                 throw new Error("The parent router's hash mode must match the child router's hash mode.");
             }
-            if (routingOptions.hashMode === 'multi' && this.resolvedHash && typeof this.resolvedHash !== 'string') {
+            if (routingOptions.hashMode === 'multi' && this.#resolvedHash && typeof this.#resolvedHash !== 'string') {
                 throw new Error("The specified hash value is not valid for the 'multi' hash mode.  Either don't specify a hash for path routing, or correct the hash value.");
             }
-            if (routingOptions.hashMode !== 'multi' && typeof this.resolvedHash === 'string') {
+            if (routingOptions.hashMode !== 'multi' && typeof this.#resolvedHash === 'string') {
                 throw new Error("A hash path ID was given, but is only allowed when the library's hash mode has been set to 'multi'.");
             }
         }
-        assertAllowedRoutingMode(this.resolvedHash);
-        this.#routeHelper = new RouteHelper(this.resolvedHash);
+        assertAllowedRoutingMode(this.#resolvedHash);
+        this.#routeHelper = new RouteHelper(this.#resolvedHash);
         if (traceOptions.routerHierarchy) {
             registerRouter(this);
             this.#cleanup = true;
@@ -175,7 +171,7 @@ export class RouterEngine {
     /**
      * Gets the route definitions.
      * 
-     * Unless you're consuming the `Router` class directly, the routes are automatically populated by the `Route` 
+     * Unless you're consuming the `RouterEngine` class directly, the routes are automatically populated by the `Route` 
      * components that are inside a `Router` component.
      */
     get routes() {
@@ -187,6 +183,22 @@ export class RouterEngine {
     get parent() {
         return this.#parent;
     }
+    /**
+     * Gets the resolved hash value for this router engine.
+     */
+    get resolvedHash() {
+        return this.#resolvedHash;
+    }
+    /**
+     * Gets the test path this router engine uses to test route paths.  Its value depends on the router's routing mode 
+     * (universe).
+     */
+    get testPath() {
+        return this.#testPath;
+    }
+    /**
+     * Disposes this router engine, unregistering it from the router hierarchy trace if needed.
+     */
     dispose() {
         if (this.#cleanup) {
             unregisterRouter(this);
