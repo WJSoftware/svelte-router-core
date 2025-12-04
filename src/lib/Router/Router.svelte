@@ -122,7 +122,6 @@
 	}
 	setRouterContext(router, resolvedHash)
 	
-	$effect.pre(() => {});
 	// Effect to transfer the router's ID to the router engine.
 	$effect.pre(() => {
 		router.id = id;
@@ -131,13 +130,11 @@
 	$effect.pre(() => {
 		// Type coerced because RouterEngine.basePath ensures that basePath is never undefined.
 		router.basePath = basePath!;
-		return () => {
-			router.basePath = parentRouter?.basePath ?? '/';
-		};
 	});
 
 	onDestroy(() => {
-		router.dispose();
+		// See #150.  Let's hope this new runtime behavior doesn't cause issues elsewhere.
+		router?.dispose();
 	});
 </script>
 
