@@ -24,4 +24,4 @@ There is no overload that doesn't take options.  If no options are needed, it is
 
 ### `KitCalculateHrefOptions`
 
-Refer to [CalculateHrefOptions](http://localhost:5173/api/core/functions#CalculateHrefOptions).  All options except `hash` are valid options.
+Refer to [CalculateHrefOptions](/api/core/functions#CalculateHrefOptions).  All options except `hash` are valid options.
