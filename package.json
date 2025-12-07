@@ -16,7 +16,7 @@
 	"description": "Next-level routing for Svelte and Sveltekit",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build && npm run prepack",
+		"build": "vite build && node scripts/generate-sitemap.js && npm run prepack",
 		"preview": "vite preview",
 		"prepack": "svelte-kit sync && svelte-package && publint && pwsh ./add-component-help.ps1",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

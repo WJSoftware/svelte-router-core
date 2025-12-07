@@ -1,0 +1,7 @@
+# Algolia-Crawler-Verif: C402FA29C1D63986
+
+User-agent: *
+Allow: /
+
+# Allow search engines to crawl all pages
+Sitemap: /sitemap.xml
