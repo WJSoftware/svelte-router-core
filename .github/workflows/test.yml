@@ -15,8 +15,9 @@ on:
       - 'AGENTS.md'
       - '.prettierrc'
       - '.prettierignore'
-      - 'src/lib/routes/**'
+      - 'src/routes/**'
       - 'static/**'
+      - 'sveltepress/**'
 
 jobs:
   test:
