@@ -1,9 +1,9 @@
 ---
-title: Svelte Router Home
-description: Test page
+title: Svelte Router
+description: Next-level routing for Svelte and Sveltekitfdsfd s
+tagline: Native Svelte v5 router for SPA's and PWA's
+actions:
+  - label: Read the docs
+    to: /docs/intro
+    type: primary
 ---
-# Svelte Router
-
-Welcome to **webJose's Svelte Router** documentation!
-
-**Svelte Router** is a very cutting-edge client-side router for SPA's and PWA's.

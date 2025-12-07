@@ -27,7 +27,11 @@ export default defineConfig({
 				{
 					title: 'Docs',
 					to: '/docs/intro'
-				}
+				},
+				{
+					title: 'API',
+					to: '/api/core/router'
+				},
 			],
 			sidebar: {
 				'/docs/': [
@@ -52,8 +56,160 @@ export default defineConfig({
 								to: '/docs/sveltekit-support'
 							}
 						]
+					},
+					{
+						title: 'Routing Modes',
+						collapsible: true,
+						items: [
+							{
+								title: 'Routing Modes (Universes)',
+								to: '/docs/routing-modes'
+							},
+							{
+								title: 'Per-Routing Mode Data',
+								to: '/docs/per-routing-mode-data'
+							}
+						]
+					},
+					{
+						title: 'Other',
+						collapsible: true,
+						items: [
+							{
+								title: 'Library Modes',
+								to: '/docs/library-modes'
+							},
+							{
+								title: 'Reactive Data',
+								to: '/docs/reactive-data'
+							},
+							{
+								title: 'Lines Of Code (LOC)',
+								to: '/docs/loc'
+							},
+						]
+					},
+					{
+						title: 'Routing',
+						collapsible: true,
+						items: [
+							{
+								title: 'Routing with Components',
+								to: '/docs/routing-with-components'
+							},
+							{
+								title: 'Routing with JavaScript',
+								to: '/docs/routing-with-javascript'
+							}
+						]
+					},
+					{
+						title: 'Navigating',
+						collapsible: true,
+						items: [
+							{
+								title: 'Navigating with Components',
+								to: '/docs/navigating-with-components'
+							},
+							{
+								title: 'Navigating with JavaScript',
+								to: '/docs/navigating-with-javascript'
+							},
+							{
+								title: 'Redirecting',
+								to: '/docs/redirecting'
+							}
+						]
+					},
+					{
+						title: 'Extension Libraries',
+						collapsible: true,
+						items: [
+							{
+								title: 'Creating an Extenstion Package',
+								to: '/docs/creating-an-extension-package'
+							},
+							{
+								title: 'Existing Extension Packages',
+								to: '/docs/existing-extension-packages'
+							}
+						]
+					},
+				],
+				'/api/': [
+					{
+						title: '@svelte-router/core',
+						collapsible: true,
+						items: [
+							{
+								title: 'Components',
+								collapsible: true,
+								items: [
+									{
+										title: 'Router',
+										to: '/api/core/router',
+									},
+									{
+										title: 'Route',
+										to: '/api/core/route',
+									},
+									{
+										title: 'Fallback',
+										to: '/api/core/fallback',
+									},
+									{
+										title: 'Link',
+										to: '/api/core/link',
+									},
+									{
+										title: 'RouterTrace',
+										to: '/api/core/routertrace',
+									},
+									{
+										title: 'LinkContext',
+										to: '/api/core/linkcontext',
+									}
+								]
+							},
+							{
+								title: 'Objects & Classes',
+								to: '/api/core/objects-and-classes',
+							},
+							{
+								title: 'Functions',
+								to: '/api/core/functions',
+							}
+						]
+					},
+					{
+						title: '@svelte-router/kit',
+						collapsible: true,
+						items: [
+							{
+								title: 'Components',
+								collapsible: true,
+								items: [
+									{
+										title: 'KitFallback',
+										to: '/api/kit/kitfallback',
+									}
+								]
+							},
+							{
+								title: 'Objects & Classes',
+								to: '/api/kit/objects-and-classes',
+							},
+							{
+								title: 'Functions',
+								to: '/api/kit/functions',
+							}
+						]
 					}
 				]
+			},
+			preBuildIconifyIcons: {
+				'akar-icons': ['github-fill'],
+				'skill-icons': ['github-dark']
 			}
 		})
 	}), svelteTesting()],

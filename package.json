@@ -74,9 +74,12 @@
 	"devDependencies": {
 		"@eslint/compat": "^2.0.0",
 		"@eslint/js": "^9.18.0",
+		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/package": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^6.1.3",
+		"@sveltepress/theme-default": "^7.0.2",
+		"@sveltepress/vite": "^1.3.2",
 		"@testing-library/svelte": "^5.2.6",
 		"eslint": "^9.18.0",
 		"eslint-config-prettier": "^10.0.1",
@@ -93,10 +96,5 @@
 		"typescript-eslint": "^8.20.0",
 		"vite": "^7.1.3",
 		"vitest": "^4.0.14"
-	},
-	"dependencies": {
-		"@sveltejs/adapter-static": "^3.0.10",
-		"@sveltepress/theme-default": "^7.0.2",
-		"@sveltepress/vite": "^1.3.2"
 	}
 }
