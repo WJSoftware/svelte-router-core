@@ -14,7 +14,7 @@ route status data is calculated.
 | `when` | `WhenPredicate` | `undefined` | | Overrides the default activation conditions for the fallback content inside the component. |
 | `children` | `Snippet<[RouterChildrenContext]>` | `undefined` | | Renders the children of the component. |
 
-[Online Documentation](https://wjfe-n-savant.hashnode.space/wjfe-n-savant/components/fallback)
+[Online Documentation](https://svelte-router.dev/api/core/fallback)
 
 ## Examples
 

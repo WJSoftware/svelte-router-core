@@ -17,7 +17,7 @@ SPA-friendly navigation (navigation without reloading).
 | `preserveQuery` | `PreserveQuery` | `false` | | Configures the component to preserve the query string whenever it triggers navigation. |
 | `children` | `Snippet<[LinkChildrenContext]>` | `undefined` | | Renders the children of the component. |
 
-[Online Documentation](https://wjfe-n-savant.hashnode.space/wjfe-n-savant/components/link)
+[Online Documentation](https://svelte-router.dev/api/core/link)
 
 ## Examples
 

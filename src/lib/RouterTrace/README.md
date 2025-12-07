@@ -35,4 +35,4 @@ same routing universe.
 | `themeBtn` | `boolean` | `false` | | Shows or hides a button capable of toggling the component's theme between light and dark themes. |
 | `buttonClass` | `ClassValue` | `undefined` | | Overrides the default CSS class of all buttons in the component. |
 
-[Online Documentation](https://wjfe-n-savant.hashnode.space/wjfe-n-savant/components/routertrace)
+[Online Documentation](https://svelte-router.dev/api/core/routertrace)

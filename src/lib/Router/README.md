@@ -13,7 +13,7 @@ children via context.
 | `hash` | `Hash` | `undefined` | | Sets the hash mode of the router. |
 | `children` | `Snippet<[RouterChildrenContext]>` | `undefined` | | Renders the children of the router. |
 
-[Online Documentation](https://wjfe-n-savant.hashnode.space/wjfe-n-savant/components/router)
+[Online Documentation](https://svelte-router.dev/api/core/router)
 
 ## Examples
 
