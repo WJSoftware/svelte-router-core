@@ -153,7 +153,7 @@ init({ defaultHash: 'named' }); // A named hash routing path
 
 Generally speaking, components that don’t get their `hash` property set to a value belong to the routing “universe” specified by the value of `defaultHash`. Therefore, by doing one of the above, developers can omit specifying the `hash` property on components that are meant to work in said routing universe.
 
-Still, both hash and path routing modes continue to be available. Set a component’s `hash` property to `false` to force path routing when the default hash value has been set to `true` or a named hash path (read **Routing Modes** to understand this).
+Still, both hash and path routing modes continue to be available. Set a component’s `hash` property to `false` to force path routing when the default hash value has been set to `true` or a named hash path (read [Routing Modes](/docs/routing-modes) to understand this).
 
 ## Paths and Route Parameters
 

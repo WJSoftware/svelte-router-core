@@ -12,7 +12,7 @@ The `location.getState()` function provides access to a reactive version of the 
 
 The `location.hashPaths` property is a derivation computed from the URL’s hash fragment and it depends on the type of hash routing the library was initialized in. In `'single'` routing mode, this is a dictionary object with just the `single` property. The value of this property is the entire hash value, minus the hashtag character. In `'multi'` routing mode, it will contain any number of properties, and each property will contain the corresponding path. Read all about this in the [Routing Modes](/docs/routing-modes) document of this guide.
 
-### RouterEngine
+### `RouterEngine`
 
 This class can be imported and used to create, in code, the core engine that drives all `Router` components.
 

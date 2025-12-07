@@ -61,7 +61,7 @@ Other than that, `location.goTo()` will correctly trigger changes in the reactiv
 
 But the problem is not resolved. Especially in micro-frontend scenarios, a foreign routing library (like `react-router-dom`), can still push or replace URL’s, incurring in de-synchronization as explained above.
 
-Full mode attempts to mitigate this problem by intercepting all calls to the History API’s `pushState()` and `replaceState()` functions. This way, whenever external code calls these functions, the library’s internal state can stay in sync.
+Full mode attempts to mitigate this problem by intercepting all calls to the **History API**’s `pushState()` and `replaceState()` functions. This way, whenever external code calls these functions, the library’s internal state can stay in sync.
 
 ## Navigation Events
 

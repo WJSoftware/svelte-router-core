@@ -5,7 +5,7 @@ description: Learn how Svelte Router can be used with Sveltekit.
 
 [GitHub: @svelte-router/kit](https://github.com/WJSoftware/svelte-router-kit)
 
-This routing library, with the assistance of the `@svelte-router/kit` package, supports Sveltekit projects, but only does so for hash routing. It supports both single and multi hash routing.
+This routing library, with the assistance of the `@svelte-router/kit` package, supports **Sveltekit** projects, but only does so for hash routing. It supports both single and multi hash routing.
 
 To use it, install it:
 
@@ -13,7 +13,7 @@ To use it, install it:
 npm install @svelte-router/kit
 ```
 
-Then use its `init()` function instead of the stock `init()` from the core package. In Sveltekit projects, the best place would be the top layout component:
+Then use its `init()` function instead of the stock `init()` from the core package. In **Sveltekit** projects, the best place would be the top layout component:
 
 
 ```svelte
@@ -26,7 +26,7 @@ Then use its `init()` function instead of the stock `init()` from the core packa
 ```
 
 :::tip[This Function Auto-Cleans Up]
-In Sveltekit, there’s a NodeJS/Deno/Bun server pre-calculating pages and does so without remembering previous renders. This means that layout is calculated every time the server serves a page. This means that, on every SSR render operation, `init()` is run. If we initialize without cleaning up, an error is thrown.
+In **Sveltekit**, there’s a NodeJS/Deno/Bun server pre-calculating pages and does so without remembering previous renders. This means that layout is calculated every time the server serves a page. This means that, on every SSR render operation, `init()` is run. If we initialize without cleaning up, an error is thrown.
 
 To simplify things for end users, the `init()` function of `@svelte-router/kit` auto-cleans up the previous initialization, so end users don’t have to remember this. This comes with a tiny price on performance.
 :::
@@ -44,14 +44,14 @@ When `@svelte-router/kit` initializes, the current value of the history state is
 In other words, after the router initializes, any state value that may have been saved will now be available as `page.state.path`.
 
 :::caution[Navigation Event!]
-This state operation is done by executing a call to Sveltekit’s `goto()` function, which triggers a navigation event! Therefore, make sure to account for this “extra” event, just in case.
+This state operation is done by executing a call to **Sveltekit**’s `goto()` function, which triggers a navigation event! Therefore, make sure to account for this “extra” event, just in case.
 :::
 
 ## Router Navigation and Sveltekit
 
-The `@svelte-router/kit` package uses `goto()` from the `$app/navigation` Sveltekit module. Routes will trigger its use, and therefore you should be able to use things like the `beforeNavigate()` function from `$app/navigation` to detect route activation.
+The `@svelte-router/kit` package uses `goto()` from the `$app/navigation` **Sveltekit** module. Routes will trigger its use, and therefore you should be able to use things like the `beforeNavigate()` function from `$app/navigation` to detect route activation.
 
-The extension package also expands the base package’s `Location` interface to add two new navigation methods. These new methods will use Sveltekit’s `goto()` function, and therefore allows you to pass any of the function’s options:
+The extension package also expands the base package’s `Location` interface to add two new navigation methods. These new methods will use **Sveltekit**’s `goto()` function, and therefore allows you to pass any of the function’s options:
 
 ```typescript
 import { location } from "@svelte-router/core";
@@ -80,7 +80,7 @@ location.kitGoTo('/some/path', {
 
 Just like their counterparts in the base `@svelte-router/core` package, the `kitNavigate()` function is the smart one that uses the value of the `hash` option to determine where in the hash the HREF goes and where in the state object the provided `state` value goes, while `kitGoTo()` is the dumb one that doesn’t bother at all and assumes the developer knows what will happen.
 
-Just like `Location.goTo()`, `Location.kitGoTo()`’s only perk is the ability to preserve query string values. If you don’t need this perk, you might as well use Sveltekit’s `goto()` function directly.
+Just like `Location.goTo()`, `Location.kitGoTo()`’s only perk is the ability to preserve query string values. If you don’t need this perk, you might as well use **Sveltekit**’s `goto()` function directly.
 
 ### The Link Component
 
@@ -101,10 +101,10 @@ Hey, if you were cornered to create a `Link` component with `goto()` capabilitie
 
 ### The `LinkContext` Component
 
-Similar story: Works just fine but cannot configure any of Sveltekit’s `goto()` extra capabilities.
+Similar story: Works just fine but cannot configure any of **Sveltekit**’s `goto()` extra capabilities.
 
 ## Fallback Content
 
 In SSR, `Route` components don’t register themselves with the parent router because registration is done inside an `$effect.pre` context, and effects don’t run on the server. This means that any fallback content specified with the `Fallback` component from the base `@svelte-router/core` library will automatically be server-rendered! This is not a good thing as they will cause flashes of unwanted content.
 
-The `@svelte-router/kit` extension library provides the `KitFallback` component that guards against this behavior. Always use `KitFallback` for fallback content in Sveltekit projects.
+The `@svelte-router/kit` extension library provides the `KitFallback` component that guards against this behavior. Always use `KitFallback` for fallback content in **Sveltekit** projects.

@@ -51,10 +51,10 @@ The following table describes exactly which universe is selected on all possible
 
 | Value of hash | Universe |
 | - | - |
-| false | Path Routing |
-| true | Hash Routing |
+| `false` | Path Routing |
+| `true` | Hash Routing |
 | A string value | A named hash routing universe |
-| undefined | Path Routing if `defaultHash` is `false`; Hash Routing if `defaultHash` is `true`; or whatever named hash routing universe was set in `defaultHash`. |
+| `undefined` | Path Routing if `defaultHash` is `false`; Hash Routing if `defaultHash` is `true`; or whatever named hash routing universe was set in `defaultHash`. |
 
 What is this `defaultHash` value? It is a routing option, and consumers of this library have the opportunity to set its value when initializing the library. The [Introduction](/docs/intro) document explains its use, and its purpose is to save developers the hassle of typing/adding the `hash` property to every routing component everywhere for the case where every component (or at least a majority of the components) are meant to belong to the same routing universe.
 

@@ -40,7 +40,7 @@ export default defineConfig({
 						collapsible: true,
 						items: [
 							{
-								title: 'About & Quickstart',
+								title: 'Introduction',
 								to: '/docs/intro'
 							},
 							{

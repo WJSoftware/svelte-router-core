@@ -38,5 +38,5 @@ Now your code works on Electron by immediately navigating to your homepage, whil
 :::caution[Only Tested on Windows]
 I only have a Windows PC available and have therefore not actually tested Electron on MacOS or Linux. If you encounter issues in either of these operating systems, please open an issue in GitHub.
 
-**COMMUNITY HELP**: To remove this notice from this document and to document compatibility with other environments like **Tauri** or **Neutralino**, please visit this GitHub discussion and provide the necessary information.
+**COMMUNITY HELP**: To remove this notice from this document and to document compatibility with other environments like **Tauri** or **Neutralino**, please visit [this GitHub discussion](https://github.com/WJSoftware/svelte-router/discussions/57) and provide the necessary information.
 :::
