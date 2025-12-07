@@ -31,7 +31,7 @@
 <nav class="navbar navbar-expand-lg bg-primary-subtle" {...restProps}>
 	<div class="container-fluid">
 		<Link class="navbar-brand fw-bold" href="/" id="logoLink">
-			<img src={logo} alt="N-Savant Compass Logo" style:height="1.7em" />
+			<img src={logo} alt="Svelte Router Compass Logo" style:height="1.7em" />
 			webJose's Svelte Router
 		</Link>
 		<button

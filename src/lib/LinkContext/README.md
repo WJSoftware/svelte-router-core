@@ -48,4 +48,4 @@ Unlike the `Link` component, the contextual properties of the `LinkContext` comp
 | `activeState` | `ActiveState` | `undefined` | | Sets the various options that are used to automatically style the anchor tag whenever a particular route becomes active. |
 | `children` | `Snippet` | `undefined` | | Renders the children of the component. |
 
-[Online Documentation](https://wjfe-n-savant.hashnode.space/wjfe-n-savant/components/linkcontext)
+[Online Documentation](https://svelte-router.dev/api/core/linkcontext)

@@ -90,7 +90,7 @@
 		</div>
 	</div>
 
-	<!-- Why Choose N-Savant -->
+	<!-- Why Choose Svelte Router -->
 	<div class="row mt-5">
 		<div class="col-lg-8 offset-lg-2">
 			<div transition:fly={{ delay: 400, y: 50, duration: 600 }}>

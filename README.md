@@ -4,7 +4,7 @@
 
 [REPL Demo](https://svelte.dev/playground/d273d356947e48c0822a65402fd06fac)
 
-[Full Documentation @ Hashnode Space](https://wjfe-n-savant.hashnode.space)
+[Full Documentation](https://svelte-router.dev)
 
 ## Features
 
@@ -101,7 +101,7 @@ location.goTo('/');
 > **⚠️ Important:** Hash routing doesn't require this extra navigation step.
 
 For applications that also run in the browser, condition the navigation to Electron only.  See the 
-[Electron page](https://wjfe-n-savant.hashnode.space/wjfe-n-savant/introduction/electron-support) online for more 
+[Electron page](https://svelte-router.dev/docs/electron-support) online for more 
 details.
 
 ### Define the Routes

@@ -22,7 +22,7 @@ export type CalculateHrefOptions = {
     /**
      * Determines the routing universe the new URL will be for.
      * 
-     * Read the [online documentation](https://wjfe-n-savant.hashnode.space/wjfe-n-savant/routing-modes) to understand 
+     * Read the [online documentation](https://svelte-router.dev/docs/routing-modes) to understand 
      * the concept of routing modes (or universes).
      */
     hash?: Hash;

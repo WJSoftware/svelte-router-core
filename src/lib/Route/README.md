@@ -19,7 +19,7 @@ they can be embedded anywhere down the hierarchy, including being children of ot
 | `params` | `RouteParamsRecord<T>` | `undefined` | Yes | Provides a way to obtain a route's parameters through property binding. |
 | `children` | `Snippet<[RouteChildrenContext<T>]>` | `undefined` | | Renders the children of the route. |
 
-[Online Documentation](https://wjfe-n-savant.hashnode.space/wjfe-n-savant/components/route)
+[Online Documentation](https://svelte-router.dev/api/core/route)
 
 ## Examples
 
