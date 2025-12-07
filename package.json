@@ -13,6 +13,7 @@
 	"bugs": {
 		"url": "https://github.com/WJSoftware/svelte-router/issues"
 	},
+	"homepage": "https://svelte-router.dev",
 	"description": "Next-level routing for Svelte and Sveltekit",
 	"scripts": {
 		"dev": "vite dev",
