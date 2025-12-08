@@ -1,5 +1,6 @@
 ---
 title: Routing Modes (Universes)
+description: Learn how Svelte Router supports simultaneous path and hash routing with multiple routing universes for maximum flexibility
 ---
 
 This routing library supports path and hash routing and does so simultaneously. This means that we can have components that work on the pathname part of the location’s URL while simultaneously having components that work on the hash part of the location’s URL.

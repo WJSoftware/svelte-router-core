@@ -1,5 +1,6 @@
 ---
 title: Route Component
+description: API reference for the Route component that defines path matching conditions and renders content for active routes
 ---
 
 :::info[Parent Requirement]

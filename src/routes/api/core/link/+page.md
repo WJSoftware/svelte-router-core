@@ -1,5 +1,6 @@
 ---
 title: Link Component
+description: API reference for the Link component providing navigation with automatic active styling and HREF generation
 ---
 
 :::info[Parent Requirement]

@@ -1,5 +1,6 @@
 ---
 title: Router Component
+description: API reference for the Router component that creates routing contexts and manages route hierarchies in Svelte
 ---
 
 :::info[Parent Requirement]

@@ -1,5 +1,6 @@
 ---
 title: Redirecting
+description: Implement URL redirections and backwards compatibility with automatic route migration for better UX
 ---
 
 Redirecting is the act of moving a user out of a particular URL and into a different/new URL. This is normally done whenever, over the course of time, an application abandons one URL in favor of another for any reason. Most often, the addition of features and refinement process of an application drives URL changes.

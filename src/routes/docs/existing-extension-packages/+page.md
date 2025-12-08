@@ -1,5 +1,6 @@
 ---
 title: Existing Extension Packages
+description: Discover available extensions for Svelte Router including SvelteKit integration and memory routing
 ---
 
 The following table lists the known extension libraries in existence. If you know one or have created one and would like to have it listed here, please open an issue in GitHub with the necessary information to create what you see in the table.

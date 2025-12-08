@@ -1,5 +1,6 @@
 ---
 title: Library Modes
+description: Choose between lite and full modes to optimize bundle size and features for your Svelte routing needs
 ---
 
 This routing library can operate in 2 different modes: **Lite** mode, and **Full** mode. The lite mode is the recommended and most popular mode and is enforced when the call to `init()` is made. Full mode can be turned on by calling the `initFull()` function instead, like this:

@@ -1,5 +1,6 @@
 ---
 title: Navigating With Components
+description: Use Link components for seamless navigation in Svelte apps with automatic active state styling
 ---
 
 This library only provides one component for navigation: The `Link` component. This is a Svelte component that generates an HTML anchor element users can click to perform navigation via the environment’s **History API**.

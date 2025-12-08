@@ -1,5 +1,6 @@
 ---
 title: Lines Of Code (LOC)
+description: Track the codebase size and complexity metrics of Svelte Router across different versions and releases
 ---
 
 :::info[LOC Calculation]

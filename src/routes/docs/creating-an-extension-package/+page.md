@@ -1,5 +1,6 @@
 ---
 title: Creating an Extension Package
+description: Build custom extensions for Svelte Router with modular architecture and custom Location implementations
 ---
 
 The desire to support **Sveltekit** projects for hash routing led to a refactor of the internals of `@svelte-router/core`. Now it’s a more modular project that allows external consumption of certain core objects that used to be unavailable.

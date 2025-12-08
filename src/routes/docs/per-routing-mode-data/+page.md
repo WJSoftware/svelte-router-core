@@ -1,5 +1,6 @@
 ---
 title: Per-Routing Mode Data
+description: Learn how Svelte Router manipulates global data to segregate and protect it between the various routing universes
 ---
 
 The concept of multiple parallel universes is convenient to explain how simultaneous and independent routing occurs within the `@svelte-router/core` routing library. However, something critical hasn’t been brought to light: Which data is associated to each universe?
