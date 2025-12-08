@@ -39,6 +39,12 @@
     )}
 </${'script'}>`;
     });
+
+    $effect(() => {
+        if (!taData) {
+            console.warn(`TechArticle metadata not found for path: ${page.url.pathname}`);
+        }
+    });
 </script>
 
 <svelte:head>

@@ -1,0 +1,46 @@
+{
+  "/api/core/router": {
+    "headline": "Router Component API",
+    "description": "Complete API reference for the Router component that creates routing contexts and manages hierarchical route structures in Svelte applications. Learn about all properties, including the bindable router engine, basePath handling, and context management for building nested routing architectures."
+  },
+  "/api/core/route": {
+    "headline": "Route Component API",
+    "description": "Comprehensive API documentation for the Route component that defines path matching conditions and renders content for active routes. Master pattern matching with string templates and regular expressions, parameter extraction, conditional routing with the 'and' property, and fallback behavior configuration."
+  },
+  "/api/core/fallback": {
+    "headline": "Fallback Component API",
+    "description": "API reference for the Fallback component that elegantly handles unmatched routes by rendering default content when no routes match. Learn how to implement graceful fallbacks, understand the component's simple yet powerful design, and create user-friendly navigation experiences."
+  },
+  "/api/core/link": {
+    "headline": "Link Component API",
+    "description": "Complete API documentation for the Link component providing intelligent navigation with automatic active styling, HREF generation, and seamless History API integration. Master all properties compatible with HTML anchor elements, making it a perfect drop-in replacement for standard hyperlinks."
+  },
+  "/api/core/linkcontext": {
+    "headline": "LinkContext Component API",
+    "description": "API reference for the LinkContext component that provides default property inheritance for nested Link components. Simplify Link component configuration by setting common properties once at a higher level, reducing repetition and ensuring consistency across related navigation elements."
+  },
+  "/api/core/routertrace": {
+    "headline": "RouterTrace Component API",
+    "description": "Development tool API reference for the RouterTrace debugging component that displays real-time route status information. Learn how to use this powerful debugging aid to visualize route matching, inspect router state, and troubleshoot routing issues during development."
+  },
+  "/api/core/functions": {
+    "headline": "Core Functions API",
+    "description": "Complete API reference for utility functions in Svelte Router including navigation helpers, HREF builders, active state behaviors, and programmatic routing tools. Master the JavaScript API that powers component functionality and enables advanced routing scenarios."
+  },
+  "/api/core/objects-and-classes": {
+    "headline": "Core Objects & Classes API",
+    "description": "Comprehensive documentation for core objects, classes, and interfaces including RouterEngine, Location implementations, and History API classes. Understand the library's architecture, learn extension points for custom implementations, and master advanced programmatic routing capabilities."
+  },
+  "/api/kit/functions": {
+    "headline": "SvelteKit Functions API",
+    "description": "API reference for functions in the @svelte-router/kit extension package that enables hash routing in SvelteKit applications. Learn about the specialized init() function and configuration options tailored for SvelteKit's server-side rendering and file-based routing environment."
+  },
+  "/api/kit/kitfallback": {
+    "headline": "KitFallback Component API",
+    "description": "API documentation for the KitFallback component specifically optimized for SvelteKit applications to prevent content flashes during server-side rendering. Understand how this specialized fallback component ensures smooth user experiences by avoiding unwanted content rendering on the server."
+  },
+  "/api/kit/objects-and-classes": {
+    "headline": "SvelteKit Objects & Classes API",
+    "description": "API reference documentation for objects and classes in the official extension package for SvelteKit: @svelte-router/kit."
+  }
+}
