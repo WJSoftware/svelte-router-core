@@ -21,9 +21,10 @@ async function findRouteFiles(dir, baseDir = dir) {
             } else if (entry.isFile() && entry.name.match(/^\+page\.(md|svelte)$/)) {
                 // Convert file path to URL path
                 const relativePath = fullPath.replace(baseDir, '');
-                const urlPath = relativePath
+                let urlPath = relativePath
                     .replace(/\\/g, '/') // Windows path separator
                     .replace(/\/\+page\.(md|svelte)$/, '') // Remove +page.md/svelte
+                    .replace(/\/\([^)]+\)/g, '') // Remove SvelteKit route groups (parenthesized folders)
                     .replace(/\/$/, '') || '/'; // Handle root, remove trailing slash
                 
                 // Filter out unwanted routes

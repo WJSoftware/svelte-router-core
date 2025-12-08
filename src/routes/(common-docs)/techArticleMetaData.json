@@ -1,0 +1,110 @@
+{
+    "/docs/intro": {
+        "headline": "Introduction", 
+        "description": "Get started quickly with Svelte Router, the most advanced routing library for Svelte with unique multi-universe routing capabilities. Learn how the router works, discover its groundbreaking features like simultaneous path and hash routing, and master the core Router, Route, Fallback and Link components essential for building modern SPAs."
+    },
+    "/docs/routing-modes": {
+        "headline": "Routing Modes (Universes)",
+        "description": "Master Svelte Router's revolutionary multi-universe architecture that enables simultaneous path and hash routing within the same application. Understand how to leverage routing universes for maximum flexibility, allowing components to work independently on pathname and hash parts of URLs for complex navigation scenarios."
+    },
+    "/docs/library-initialization": {
+        "headline": "Library Initialization",
+        "description": "Configure Svelte Router for your specific needs with comprehensive initialization options. Learn about the init() function, understand different configuration modes, and discover advanced setup techniques for optimal performance and functionality in your Svelte applications."
+    },
+    "/docs/library-modes": {
+        "headline": "Library Modes",
+        "description": "Optimize your bundle size and functionality by choosing between Lite and Full modes in Svelte Router. Understand the differences between modes, when to use each one, and how to configure them to match your application's performance requirements and feature needs."
+    },
+    "/docs/routing-with-components": {
+        "headline": "Routing With Components",
+        "description": "Master component-based routing with Router, Route, and Fallback components for intuitive SPA navigation. Learn the preferred declarative approach to routing that creates natural, human-readable code while working seamlessly across all routing universes and modes."
+    },
+    "/docs/routing-with-javascript": {
+        "headline": "Routing With JavaScript", 
+        "description": "Harness the power of programmatic routing with JavaScript APIs and the RouterEngine class. Understand how to set up, monitor, and control routing functionality programmatically using the location object and RouterEngine for advanced navigation scenarios and dynamic routing requirements."
+    },
+    "/docs/navigating-with-components": {
+        "headline": "Navigating With Components",
+        "description": "Implement seamless navigation using Svelte Router's Link component with automatic active state styling and intelligent HREF generation. Learn best practices for component-based navigation, understand when to use HTML anchor elements versus Link components, and master active state management."
+    },
+    "/docs/navigating-with-javascript": {
+        "headline": "Navigating With JavaScript",
+        "description": "Perform programmatic navigation with powerful JavaScript functions for dynamic routing scenarios. Master the navigate() and goTo() functions, learn HREF and state calculation helpers, and understand how to implement complex navigation logic that responds to user interactions and application state."
+    },
+    "/docs/reactive-data": {
+        "headline": "Reactive Data",
+        "description": "Leverage Svelte's reactivity system to respond naturally to URL and navigation changes without complex event handling. Discover how Svelte Router eliminates the need for traditional routing events by providing reactive data that automatically updates when navigation occurs, simplifying your application's architecture."
+    },
+    "/docs/per-routing-mode-data": {
+        "headline": "Per-Routing Mode Data",
+        "description": "Understand how Svelte Router intelligently manages and segregates global data between multiple routing universes. Learn how URL hash fragments are carefully split among routing modes, ensuring navigation actions don't interfere with unrelated routing paths in multi-universe applications."
+    },
+    "/docs/redirecting": {
+        "headline": "Redirecting",
+        "description": "Implement robust URL redirection strategies and maintain backwards compatibility with automatic route migration. Learn why redirects are essential for user experience, how to handle URL changes over time, and best practices for maintaining bookmarked links and social media shares."
+    },
+    "/docs/loc": {
+        "headline": "Lines Of Code (LOC)",
+        "description": "Track the evolution and complexity metrics of Svelte Router's codebase across different versions and releases. Monitor the library's size and architectural decisions through detailed line-of-code analysis, helping you understand the project's growth and maintenance characteristics."
+    },
+    "/docs/sveltekit-support": {
+        "headline": "SvelteKit Support", 
+        "description": "Integrate Svelte Router with SvelteKit projects using the dedicated @svelte-router/kit extension package. Learn how to implement hash routing (both single and multi-hash) in SvelteKit applications while leveraging server-side rendering capabilities and SvelteKit's file-based routing system."
+    },
+    "/docs/electron-support": {
+        "headline": "Electron Support",
+        "description": "Deploy Svelte Router in Electron applications with full support for both path and hash routing modes. Learn the simple additional configuration steps required for path routing in Electron environments and understand the platform-specific considerations for desktop application routing."
+    },
+    "/docs/creating-an-extension-package": {
+        "headline": "Creating an Extension Package",
+        "description": "Build powerful custom extensions for Svelte Router using its modular architecture and extensible core interfaces. Master the creation of NPM extension packages with custom Location implementations, understand the library's internal architecture, and learn how to extend routing capabilities for specialized use cases."
+    },
+    "/docs/existing-extension-packages": {
+        "headline": "Existing Extension Packages",
+        "description": "Discover the ecosystem of available Svelte Router extensions including SvelteKit integration, memory routing, and specialized implementations. Explore community-built packages that extend the router's capabilities and learn about integration options for various development environments and use cases."
+    },
+    "/api/core/router": {
+        "headline": "Router Component API",
+        "description": "Complete API reference for the Router component that creates routing contexts and manages hierarchical route structures in Svelte applications. Learn about all properties, including the bindable router engine, basePath handling, and context management for building nested routing architectures."
+    },
+    "/api/core/route": {
+        "headline": "Route Component API", 
+        "description": "Comprehensive API documentation for the Route component that defines path matching conditions and renders content for active routes. Master pattern matching with string templates and regular expressions, parameter extraction, conditional routing with the 'and' property, and fallback behavior configuration."
+    },
+    "/api/core/fallback": {
+        "headline": "Fallback Component API",
+        "description": "API reference for the Fallback component that elegantly handles unmatched routes by rendering default content when no routes match. Learn how to implement graceful fallbacks, understand the component's simple yet powerful design, and create user-friendly navigation experiences."
+    },
+    "/api/core/link": {
+        "headline": "Link Component API",
+        "description": "Complete API documentation for the Link component providing intelligent navigation with automatic active styling, HREF generation, and seamless History API integration. Master all properties compatible with HTML anchor elements, making it a perfect drop-in replacement for standard hyperlinks."
+    },
+    "/api/core/linkcontext": {
+        "headline": "LinkContext Component API", 
+        "description": "API reference for the LinkContext component that provides default property inheritance for nested Link components. Simplify Link component configuration by setting common properties once at a higher level, reducing repetition and ensuring consistency across related navigation elements."
+    },
+    "/api/core/routertrace": {
+        "headline": "RouterTrace Component API",
+        "description": "Development tool API reference for the RouterTrace debugging component that displays real-time route status information. Learn how to use this powerful debugging aid to visualize route matching, inspect router state, and troubleshoot routing issues during development."
+    },
+    "/api/core/functions": {
+        "headline": "Core Functions API",
+        "description": "Complete API reference for utility functions in Svelte Router including navigation helpers, HREF builders, active state behaviors, and programmatic routing tools. Master the JavaScript API that powers component functionality and enables advanced routing scenarios."
+    },
+    "/api/core/objects-and-classes": {
+        "headline": "Core Objects & Classes API",
+        "description": "Comprehensive documentation for core objects, classes, and interfaces including RouterEngine, Location implementations, and History API classes. Understand the library's architecture, learn extension points for custom implementations, and master advanced programmatic routing capabilities."
+    },
+    "/api/kit/functions": {
+        "headline": "SvelteKit Functions API",
+        "description": "API reference for functions in the @svelte-router/kit extension package that enables hash routing in SvelteKit applications. Learn about the specialized init() function and configuration options tailored for SvelteKit's server-side rendering and file-based routing environment."
+    },
+    "/api/kit/kitfallback": {
+        "headline": "KitFallback Component API",
+        "description": "API documentation for the KitFallback component specifically optimized for SvelteKit applications to prevent content flashes during server-side rendering. Understand how this specialized fallback component ensures smooth user experiences by avoiding unwanted content rendering on the server."
+    },
+    "/api/kit/objects-and-classes": {
+        "headline": "SvelteKit Objects & Classes API",
+        "description": "API reference documentation for objects and classes in the official extension package for SvelteKit: @svelte-router/kit."
+    }
+}
