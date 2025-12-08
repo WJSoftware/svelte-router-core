@@ -4,21 +4,23 @@ on:
   pull_request:
     branches: [main]
     paths-ignore:
-      - 'docs/**'
-      - 'playground/**'
       - '.github/**'
+      - 'docs/**'
+      - 'patches/**'
+      - 'playground/**'
+      - 'scripts/**'
       - 'README.md'
-      - 'LICENSE'
-      - '.gitignore'
-      - 'eslint.config.js'
-      - 'add-component-help.ps1'
-      - 'AGENTS.md'
-      - '.prettierrc'
-      - '.prettierignore'
-      - 'src/routes/**'
       - 'static/**'
       - 'sveltepress/**'
-      - 'scripts/**'
+      - '.gitignore'
+      - '.npmrc'
+      - '.prettierignore'
+      - '.prettierrc'
+      - 'add-component-help.ps1'
+      - 'AGENTS.md'
+      - 'eslint.config.js'
+      - 'LICENSE'
+      - 'src/routes/**'
 
 jobs:
   test:
