@@ -1,5 +1,6 @@
 ---
 title: Navigating With JavaScript
+description: Programmatic navigation with JavaScript functions for dynamic routing in Svelte applications
 ---
 
 Navigation is also very possible in JavaScript. There are 4 helper functions that can be used to calculate both HREFs and state objects correctly, and the location global object contains 2 functions that actually push URLs to the environment’s navigation history.

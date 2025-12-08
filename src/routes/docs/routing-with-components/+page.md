@@ -1,5 +1,6 @@
 ---
 title: Routing With Components
+description: Master component-based routing with Router, Route, and Fallback components for intuitive SPA navigation
 ---
 
 This is the preferred way because it is the more natural and descriptive one to us, humans. What we do is add `Router` and `Route` components throughout our own component hierarchy in order to achieve the “pages” effect we desire.

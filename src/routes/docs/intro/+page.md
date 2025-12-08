@@ -1,6 +1,6 @@
 ---
 title: Introduction
-description: Meet the most unique and advanced router for Svelte
+description: Meet Svelte Router, the most advanced routing library for Svelte with unique multi-universe routing capabilities
 ---
 
 **webJose's Svelte Router** is the most unique router in existence, even considering routers for other libraries and frameworks.  Among many commonly-known features, it introduces **3 no other router in the world has**.  This router library:

@@ -1,5 +1,6 @@
 ---
 title: Functions
+description: API reference for functions in the SvelteKit extension for Svelte Router hash routing
 ---
 
 ## `init`

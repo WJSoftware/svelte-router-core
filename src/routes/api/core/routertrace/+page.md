@@ -1,5 +1,6 @@
 ---
 title: RouterTrace Component
+description: API reference for RouterTrace debugging component that displays route status information during development
 ---
 
 :::info[Parent Requirement]

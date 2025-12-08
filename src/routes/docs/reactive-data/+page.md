@@ -1,5 +1,6 @@
 ---
 title: Reactive Data
+description: Leverage Svelte's reactivity and react naturally to changes in the environment's URL and history state
 ---
 
 All generated data is reactive, which simplifies the library considerably. For example, other routing solutions take the route of providing events for many things, like `beforeRouteMatch` and things like that.

@@ -1,5 +1,6 @@
 ---
 title: Objects & Classes
+description: API reference for core objects, classes, and interfaces in Svelte Router including RouterEngine and Location
 ---
 
 ## `InterceptedHistoryApi`

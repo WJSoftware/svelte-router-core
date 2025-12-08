@@ -1,5 +1,6 @@
 ---
 title: Functions
+description: Complete API reference for utility functions in Svelte Router including navigation, HREF building, and active behaviors
 ---
 
 ## `activeBehavior`

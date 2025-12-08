@@ -1,5 +1,6 @@
 ---
 title: KitFallback Component
+description: API reference for KitFallback component optimized for SvelteKit server-side rendering without content flashes
 ---
 
 :::info[Parent Requirement]

@@ -1,5 +1,6 @@
 ---
 title: Fallback Component
+description: API reference for the Fallback component that renders content when no routes match in your Svelte application
 ---
 
 :::info[Parent Requirement]

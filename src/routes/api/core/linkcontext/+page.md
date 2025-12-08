@@ -1,5 +1,6 @@
 ---
 title: LinkContext Component
+description: API reference for LinkContext component that provides default properties for nested Link components
 ---
 
 :::info[Parent Requirement]
