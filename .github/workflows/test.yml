@@ -3,24 +3,12 @@ name: Test
 on:
   pull_request:
     branches: [main]
-    paths-ignore:
-      - '.github/**'
-      - 'docs/**'
-      - 'patches/**'
-      - 'playground/**'
-      - 'scripts/**'
-      - 'README.md'
-      - 'static/**'
-      - 'sveltepress/**'
-      - '.gitignore'
-      - '.npmrc'
-      - '.prettierignore'
-      - '.prettierrc'
-      - 'add-component-help.ps1'
-      - 'AGENTS.md'
-      - 'eslint.config.js'
-      - 'LICENSE'
-      - 'src/routes/**'
+    paths:
+      - 'src/lib/**'
+      - 'package.json'
+      - 'vite.config.ts'
+      - 'svelte.config.js'
+      - 'tsconfig.json'
 
 jobs:
   test:

@@ -74,7 +74,7 @@ jobs:
             }
             
             const commentBody = [
-              `🚀 **Preview deployment ready!** (Deployment #${deploymentCount})`,
+              `🚀 **Preview deployment ready!** (${deploymentCount} ${deploymentCount === 1 ? 'deployment' : 'deployments'})`,
               '',
               `📍 **Preview URL:** ${previewUrl}`,
               '',
