@@ -17,7 +17,7 @@
   "description": "Next-level routing for Svelte and Sveltekit",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build && node scripts/generate-sitemap.js && npm run prepack",
+    "build": "patch-package && vite build && node scripts/generate-sitemap.js && npm run prepack",
     "preview": "vite preview",
     "prepack": "svelte-kit sync && svelte-package && publint && pwsh ./add-component-help.ps1",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -25,8 +25,7 @@
     "format": "prettier --write .",
     "lint": "prettier --check . && eslint .",
     "test:unit": "vitest",
-    "test": "npm run test:unit -- --run",
-    "postinstall": "patch-package"
+    "test": "npm run test:unit -- --run"
   },
   "files": [
     "dist",
