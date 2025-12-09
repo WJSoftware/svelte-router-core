@@ -19,6 +19,11 @@ export const themeConfig = defaultTheme({
             end: '#3b82f6'
         }
     },
+    docsearch: {
+        appId: '5C89SA9O1K',
+        apiKey: '6e857c9d7153d94114225a2b3a47e5d9',
+        indexName: 'Svelte Router'
+    },
     navbar: [
         {
             title: 'Docs',
