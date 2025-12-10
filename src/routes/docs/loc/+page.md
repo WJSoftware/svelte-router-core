@@ -11,6 +11,63 @@ The total count is also shown without `RouterTrace`, which is a non-production c
 For detailed information about changes between releases, see the project’s [Releases page](https://github.com/WJSoftware/svelte-router/releases).
 :::
 
+## Version 1.0.4
+
+Lines of Code: **1,934** (**1,560** without `RouterTrace`)
+
+Command line: `cloc .\src\lib\ --exclude-dir=testing --exclude-ext=test.ts --exclude-lang=Markdown,SVG --strip-str-comments`
+
+cloc version: **v2.07**
+
+```plaintext
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+TypeScript                      29            152            949           1270
+Svelte                           6             74            350            664
+-------------------------------------------------------------------------------
+SUM:                            35            226           1299           1934
+-------------------------------------------------------------------------------
+```
+
+## Version 1.0.3
+
+Lines of Code: **1,922** (**1,548** without `RouterTrace`)
+
+Command line: `cloc .\src\lib\ --exclude-dir=testing --exclude-ext=test.ts --exclude-lang=Markdown,SVG --strip-str-comments`
+
+cloc version: **v2.07**
+
+```plaintext
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+TypeScript                      29            152            949           1258
+Svelte                           6             74            350            664
+-------------------------------------------------------------------------------
+SUM:                            35            226           1299           1922
+-------------------------------------------------------------------------------
+```
+
+## Version 1.0.2
+
+Lines of Code: **1,760** (**1,388** without `RouterTrace`)
+
+Command line: `cloc .\src\lib\ --exclude-dir=testing --exclude-ext=test.ts --exclude-lang=Markdown,SVG --strip-str-comments`
+
+cloc version: **v2.07**
+
+```plaintext
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+TypeScript                      29            155            949           1108
+Svelte                           6             74            350            652
+-------------------------------------------------------------------------------
+SUM:                            35            229           1299           1760
+-------------------------------------------------------------------------------
+```
+
 ## Version 1.0.1
 
 Lines of Code: **1,760** (**1,388** without `RouterTrace`)
@@ -20,7 +77,6 @@ Command line: `cloc .\src\lib\ --exclude-dir=testing --exclude-ext=test.ts --exc
 cloc version: **v2.07**
 
 ```plaintext
-Copy
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------

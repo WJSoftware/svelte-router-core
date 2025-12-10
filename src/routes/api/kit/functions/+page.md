@@ -5,15 +5,11 @@ description: API reference for functions in the SvelteKit extension for Svelte R
 
 ## `init`
 
-Import from: `@svelte-router/kit`
-
 `(options?: KitInitOptions): () => void`
 
 Initializes the library. This is a must-do operation before any other functionality can be used.
 
 ## `kitCalculateHref`
-
-Import from: `@svelte-router/kit`
 
 `(options: KitCalculateHrefOptions, ...hrefs: string[]): string`
 

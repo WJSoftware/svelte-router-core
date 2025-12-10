@@ -68,8 +68,7 @@ The following example shows how to react to routes becoming active:
 
 ```svelte
 <script lang="ts">
-    import type { RouterEngine } from "@svelte-router/core/kernel";
-    import { Router, Route, ... } from "@svelte-router/core";
+    import { Router, Route, RouterEngine, ... } from "@svelte-router/core";
 
     let router = $state<RouterEngine>();
 

@@ -21,7 +21,19 @@ describe('index', () => {
             'activeBehavior',
             'Redirector',
             'buildHref',
-            'joinPaths'
+            'joinPaths',
+            'RouterEngine',
+            'isConformantState',
+            'calculateHref',
+            'calculateState',
+            'initCore',
+            'LocationState',
+            'StockHistoryApi',
+            'InterceptedHistoryApi',
+            'LocationLite',
+            'LocationFull',
+            'preserveQueryInUrl',
+            'calculateMultiHashFragment'
         ];
 
         // Act.

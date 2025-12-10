@@ -9,9 +9,10 @@
         RouterTrace,
         Redirector,
         location,
-        buildHref
+        buildHref,
+        calculateHref,
+        calculateState
     } from '@svelte-router/core';
-    import { calculateHref, calculateState } from '@svelte-router/core/kernel';
     import NotFound from './lib/NotFound.svelte';
     import HomeView from './lib/views/home/HomeView.svelte';
     import PathRoutingView from './lib/views/path-routing/PathRoutingView.svelte';

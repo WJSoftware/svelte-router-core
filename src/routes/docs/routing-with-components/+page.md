@@ -165,8 +165,7 @@ As the example shows, we are in complete liberty of executing arbitrary code in 
 ```svelte
 <!-- Creating and passing a RouterEngine instance -->
 <script lang="ts">
-  import { Router } from "@svelte-router/core";
-  import { RouterEngine } from "@svelte-router/core/kernel";
+  import { Router, RouterEngine } from "@svelte-router/core";
 
   const router = new RouterEngine();
 </script>

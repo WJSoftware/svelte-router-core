@@ -75,8 +75,12 @@ Usage of these functions is simple:
 
 ```typescript
 // Inside a component, for example:
-import { calculateHref, calculateState } from '@svelte-router/core/kernel';
-import { location, type Hash } from '@svelte-router/core';
+import {
+    calculateHref,
+    calculateState,
+    location,
+    type Hash
+} from '@svelte-router/core';
 
 type Props = {
     keyProp: string;

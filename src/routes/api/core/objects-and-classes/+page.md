@@ -2,6 +2,11 @@
 title: Objects & Classes
 description: API reference for core objects, classes, and interfaces in Svelte Router including RouterEngine and Location
 ---
+:::caution[Don't Import from @svelte-router/core/kernel]
+The sub-module `@svelte-router/core/kernel` has been deprecated as of **v1.0.4**.  While it is still possible to use it, it must not be used.  **It will be removed in v2.0 without fail**.
+
+This change responds to the fact that sometimes, in micro-frontend scenarios, people will externalize the routing library.  To avoid headaches regarding different module names, the submodule is now completely discouraged.
+:::
 
 ## `InterceptedHistoryApi`
 
@@ -9,7 +14,7 @@ description: API reference for core objects, classes, and interfaces in Svelte R
 Only used by extension packages. Read the [Creating an Extension Package](/docs/creating-an-extension-package) document in this guide for details.
 :::
 
-Type: **Class**; Import from: `@svelte-router/core/kernel`
+Type: **Class**
 
 This is the stock implementation of the `FullModeHistoryApi` interface, and the history manager used whenever the library runs in **full** mode.
 
@@ -17,7 +22,7 @@ It can also serve as a base class per the standard rules of the JavaScript langu
 
 ## `location`
 
-Type: `Location`; Import from: `@svelte-router/core`, `@svelte-router/core/kernel`
+Type: `Location`
 
 This is the global object that provides URL reactivity to all other library assets. This object is created by the library’s `init()` function, based on the options given to it.
 
@@ -83,7 +88,7 @@ Only available in full library mode, allows subscription to the `beforeNavigate`
 Only used by extension packages. Read the [Creating an Extension Package](/docs/creating-an-extension-package) document in this guide for details.
 :::
 
-Type: **Class**; Import from: `@svelte-router/core/kernel`
+Type: **Class**
 
 This is the main stock implementation of the `Location` interface. Extension packages may use it when all the extension does is provide a custom implementation of the `HistoryApi` or `FullModeHistoryApi` interfaces. Using this class locks the library in **lite** mode.
 
@@ -95,7 +100,7 @@ It can also serve as a base class per the standard rules of the JavaScript langu
 Only used by extension packages. Read the [Creating an Extension Package](/docs/creating-an-extension-package) document in this guide for details.
 :::
 
-Type: **Class**; Import from: `@svelte-router/core/kernel`
+Type: **Class**
 
 This is the stock implementation of the `Location` interface used when the library is initialized in **full** mode. Its constructor only accepts **FullModeHistoryApi** implementations. Use it in extension packages that don’t create custom **Location** implementations, but desire to provide a custom full mode experience by customizing the behavior of the backing environment History manager.
 
@@ -107,7 +112,7 @@ It can also serve as a base class per the standard rules of the JavaScript langu
 Only used by extension packages. Read the [Creating an Extension Package](/docs/creating-an-extension-package) document in this guide for details.
 :::
 
-Type: **Class**; Import from: `@svelte-router/core/kernel`
+Type: **Class**
 
 This is a very simple class that merely initializes 2 public fields: The `url` field is initialized with a `SvelteURL` instance; the `state` field initializes with a state object that is conformant with the `State` data type.
 
@@ -117,7 +122,7 @@ The class’ constructor currently accepts two optional parameters. The first on
 
 ## `Redirector`
 
-Type: **Class**; Import from: `@svelte-router/core`
+Type: **Class**
 
 Use this class inside components to enable automatic URL redirection. It is used to keep deprecated URL’s out of sight but still functional. It allows routing in the same routing universe as well as routing from one routing universe to another.
 
@@ -129,7 +134,7 @@ Array used to register redirections. Redirections are objects that define the sh
 
 ## `RouterEngine`
 
-Type: **Class**; Import from: `@svelte-router/core/kernel`
+Type: **Class**
 
 This class powers all `Router` components and can be used directly. Note, however, that when directly used you’re the responsible for creating proper parent-child relationships between `RouterEngine` instances.
 
@@ -213,7 +218,7 @@ You don’t need to dispose a `RouterEngine` instance that has been given to or 
 Only used by extension packages. Read the [Creating an Extension Package](/docs/creating-an-extension-package) document in this guide for details.
 :::
 
-Type: **Class**; Import from: `@svelte-router/core/kernel`
+Type: **Class**
 
 This is the stock implementation of the `HistoryApi` interface. It is the default class used by the `LocationLite` class whenever the library runs in **lite** mode.
 

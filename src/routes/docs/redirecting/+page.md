@@ -168,9 +168,8 @@ To illustrate, we could write the simple example as:
 
 ```svelte
 <script lang="ts">
-  import { Redirector, buildHref } from "@svelte-router/core";
+  import { Redirector, buildHref, calculateHref } from "@svelte-router/core";
   import { currentUser } from "$lib/auth/current-user.js";
-  import { calculateHref } from "@svelte-router/core/kernel";
   import { untrack } from "svelte";
 
   let redirector = new Redirector(false);
@@ -216,9 +215,8 @@ Assuming the current environment’s URL is `https://example.com/some/where#p1=/
 
 ```svelte
 <script lang="ts">
-  import { Redirector } from "@svelte-router/core";
+  import { Redirector, calculateMultiHashFragment } from "@svelte-router/core";
   import { currentUser } from "$lib/auth/current-user.js";
-  import { calculateMultiHashFragment } from "@svelte-router/core/kernel";
 
   let redirector = new Redirector('p1');
   redirector.redirections.push({

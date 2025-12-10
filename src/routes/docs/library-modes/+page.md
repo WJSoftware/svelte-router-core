@@ -134,7 +134,7 @@ As stated above, this is the event to use if you would like the opportunity to e
 
 ```typescript
 import { location, type BeforeNavigateEvent } from '@svelte-router/core';
-import { isConformantState } from '@svelte-router/core/kernel';
+import { isConformantState } from '@svelte-router/core';
 
 function cancelEventForSomeReason(event: BeforeNavigateEvent) {
     if (!isConformantState(event.state)) {

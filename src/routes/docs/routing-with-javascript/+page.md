@@ -17,7 +17,7 @@ The `location.hashPaths` property is a derivation computed from the URL’s hash
 This class can be imported and used to create, in code, the core engine that drives all `Router` components.
 
 ```typescript
-import { RouterEngine } from '@svelte-router/core/kernel';
+import { RouterEngine } from '@svelte-router/core';
 
 const myRouter = new RouterEngine(/* parent router or options */);
 myRouter.routes['dynamic-route'] = {
@@ -63,8 +63,7 @@ As seen, you might want to add routes programmatically. You can either create a 
 
 ```svelte
 <script lang="ts">
-    import { Router } from "@svelte-router/core";
-    import { RouterEngine } from "@svelte-router/core/kernel";
+    import { Router, RouterEngine } from "@svelte-router/core";
 
     let router: $state<RouterEngine>();
 
@@ -105,7 +104,7 @@ Another use case could be to separate route data from the markup positions they 
 
 ```typescript
 // master-routes.ts
-import { RouterEngine } from '@svelte-router/core/kernel';
+import { RouterEngine } from '@svelte-router/core';
 import routeData from './route-data.json';
 
 const router = new RouterEngine();
