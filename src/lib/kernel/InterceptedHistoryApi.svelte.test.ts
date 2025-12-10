@@ -7,15 +7,20 @@ describe('InterceptedHistoryApi', () => {
     const initialUrl = 'http://example.com/';
     let historyApi: InterceptedHistoryApi;
     let browserMocks: ReturnType<typeof setupBrowserMocks>;
+    let origPushState: typeof globalThis.window.history.pushState;
+    let origReplaceState: typeof globalThis.window.history.replaceState;
 
     beforeEach(() => {
         browserMocks = setupBrowserMocks(initialUrl);
+        origPushState = globalThis.window.history.pushState;
+        origReplaceState = globalThis.window.history.replaceState;
         historyApi = new InterceptedHistoryApi();
     });
 
     afterEach(() => {
         historyApi.dispose();
         browserMocks.cleanup();
+        vi.resetAllMocks();
     });
 
     describe('constructor', () => {
@@ -24,9 +29,10 @@ describe('InterceptedHistoryApi', () => {
             expect(historyApi.url.href).toBe(initialUrl);
         });
 
-        test('Should replace window.history with itself.', () => {
+        test("Should replace window.history's pushState and replaceState methods.", () => {
             // Assert.
-            expect(globalThis.window.history).toBe(historyApi);
+            expect(globalThis.window.history.pushState).not.toBe(origPushState);
+            expect(globalThis.window.history.replaceState).not.toBe(origReplaceState);
         });
 
         test('Should use provided initial URL.', () => {
@@ -315,14 +321,13 @@ describe('InterceptedHistoryApi', () => {
 
         test('Should call the original history method when navigation is not cancelled.', () => {
             // Arrange.
-            const originalPushState = vi.spyOn(browserMocks.history, 'pushState');
             const state = { path: { test: 'value' }, hash: {} };
 
             // Act.
             historyApi.pushState(state, '', 'http://example.com/other');
 
             // Assert.
-            expect(originalPushState).toHaveBeenCalledWith(state, '', 'http://example.com/other');
+            expect(origPushState).toHaveBeenCalledWith(state, '', 'http://example.com/other');
         });
     });
 
@@ -375,15 +380,13 @@ describe('InterceptedHistoryApi', () => {
             expect(callback).not.toHaveBeenCalled();
         });
 
-        test('Should restore original window.history.', () => {
-            // Arrange.
-            const originalHistory = browserMocks.history;
-
+        test('Should restore original window.history methods.', () => {
             // Act.
             historyApi.dispose();
 
             // Assert.
-            expect(globalThis.window.history).toBe(originalHistory);
+            expect(globalThis.window.history.pushState).toBe(origPushState);
+            expect(globalThis.window.history.replaceState).toBe(origReplaceState);
         });
 
         test('Should be safe to call multiple times.', () => {
@@ -422,7 +425,6 @@ describe('InterceptedHistoryApi', () => {
             });
             historyApi.on('beforeNavigate', callback1);
             historyApi2.on('beforeNavigate', callback2);
-            expect(globalThis.window.history).toBe(historyApi2);
 
             // Act.
             historyApi2.pushState({}, '', 'http://example.com/test');

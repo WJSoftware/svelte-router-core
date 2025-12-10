@@ -20,13 +20,16 @@ export class InterceptedHistoryApi extends StockHistoryApi implements FullModeHi
         navigationCancelled: {}
     };
     #nextSubId = 0;
-    #originalHistory: History | undefined;
+    #origReplaceState;
+    #origPushState;
 
     constructor(initialUrl?: string, initialState?: State) {
         super(initialUrl, initialState);
         if (globalThis.window) {
-            this.#originalHistory = globalThis.window.history;
-            globalThis.window.history = this;
+            this.#origReplaceState = globalThis.window.history.replaceState;
+            this.#origPushState = globalThis.window.history.pushState;
+            globalThis.window.history.replaceState = this.replaceState.bind(this);
+            globalThis.window.history.pushState = this.pushState.bind(this);
         }
     }
 
@@ -82,7 +85,7 @@ export class InterceptedHistoryApi extends StockHistoryApi implements FullModeHi
                 );
                 event.state = this.state;
             }
-            this.#originalHistory?.[`${method}State`](event.state, unused, url);
+            (method === 'push' ? this.#origPushState : this.#origReplaceState)?.bind(globalThis.window.history)(event.state, unused, url);
             this.url.href = globalThis.window?.location?.href ?? new URL(url ?? '', this.url).href;
             this.state = event.state as State;
         }
@@ -108,8 +111,9 @@ export class InterceptedHistoryApi extends StockHistoryApi implements FullModeHi
             beforeNavigate: {},
             navigationCancelled: {}
         };
-        if (this.#originalHistory) {
-            globalThis.window.history = this.#originalHistory;
+        if (globalThis.window) {
+            globalThis.window.history.replaceState = this.#origReplaceState!;
+            globalThis.window.history.pushState = this.#origPushState!;
         }
         super.dispose();
     }
