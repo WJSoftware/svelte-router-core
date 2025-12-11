@@ -289,17 +289,17 @@ describe('RouteHelper', () => {
             test.each([
                 {
                     pattern: '/files/*',
-                    expectedRegex: '^\\/files(?<rest>.*)$',
+                    expectedRegex: '^\\/files(?<rest>\\/.*)$',
                     description: 'rest parameter'
                 },
                 {
                     pattern: '/api/v1/*',
-                    expectedRegex: '^\\/api\\/v1(?<rest>.*)$',
+                    expectedRegex: '^\\/api\\/v1(?<rest>\\/.*)$',
                     description: 'rest parameter in nested path'
                 },
                 {
                     pattern: '/*',
-                    expectedRegex: '^(?<rest>.*)$',
+                    expectedRegex: '^(?<rest>\\/.*)$',
                     description: 'root rest parameter'
                 }
             ])('Should create correct regex for $description .', ({ pattern, expectedRegex }) => {
@@ -543,10 +543,38 @@ describe('RouteHelper', () => {
                 },
                 {
                     testPath: '/files/docs/readme.txt',
-                    regex: /^\/files\/(?<rest>.*)$/,
+                    regex: /^\/files(?<rest>\/.*)/,
                     expectedMatch: true,
-                    expectedParams: { rest: 'docs/readme.txt' },
+                    expectedParams: { rest: '/docs/readme.txt' },
                     description: 'rest parameter matching'
+                },
+                {
+                    testPath: 'files-v2/docs/readme.txt',
+                    regex: /^\/files(?<rest>\/.*)/,
+                    expectedMatch: false,
+                    expectedParams: undefined,
+                    description: 'rest param + similar text in path (#182)'
+                },
+                {
+                    testPath: '/abc/def',
+                    regex: /^(?<rest>\/.*)/,
+                    expectedMatch: true,
+                    expectedParams: { rest: '/abc/def' },
+                    description: 'root path regex (#182)'
+                },
+                {
+                    testPath: '/',
+                    regex: /^(?<rest>\/.*)/,
+                    expectedMatch: true,
+                    expectedParams: { rest: '/' },
+                    description: 'root path regex + root test path (#182)'
+                },
+                {
+                    testPath: '/abc/def/ghi/jkl',
+                    regex: /^\/abc(?<rest>\/.*)\/(?<last>[^/]+)/,
+                    expectedMatch: true,
+                    expectedParams: { rest: '/def/ghi', last: 'jkl' },
+                    description: 'rest parameter in middle of path'
                 },
                 {
                     testPath: '/different',

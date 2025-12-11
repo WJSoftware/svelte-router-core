@@ -81,7 +81,7 @@ export class RouteHelper {
                 );
             }
         );
-        regexPattern = regexPattern.replace(restParamRegex, `(?<rest>.*)`);
+        regexPattern = regexPattern.replace(restParamRegex, '(?<rest>\\/.*)');
         return {
             regex: new RegExp(`^${regexPattern}$`, routeInfo.caseSensitive ? undefined : 'i'),
             and: routeInfo.and,
