@@ -211,5 +211,18 @@ export const themeConfig = defaultTheme({
     preBuildIconifyIcons: {
         'akar-icons': ['github-fill'],
         'skill-icons': ['github-dark']
+    },
+    highlighter: {
+        languages: [
+            'svelte',
+            'typescript',
+            'javascript',
+            'json',
+            'bash',
+            'powershell',
+            'css',
+            'scss',
+            'html'
+        ]
     }
 });
