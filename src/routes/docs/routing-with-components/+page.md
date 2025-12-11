@@ -173,7 +173,7 @@ First, the common scenario:
 
 This is typical:  We added a top route to group functionality together, and we use the `rest` parameter to make sure the route remains active for sub-paths  of the main `/users` path.
 
-Its second typical use is to collect any number of parameters:
+Its second typical use is to collect any number of path segments:
 
 ```svelte
 <Route key="search" path="/search/*">
