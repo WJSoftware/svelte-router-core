@@ -167,6 +167,7 @@ First, the common scenario:
     <Route key="user-settings" path="/settings">...</Route>
     <Route key="user-activity" path="/activity">...</Route>
     ...
+  </Router>
 </Route>
 ```
 
