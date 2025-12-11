@@ -55,11 +55,7 @@ Let’s add some extra things we commonly need:
 
 The path specified for the route defines the `id` route parameter. Parameters are required, unless you append a question mark to their definition, as in `:id?`.
 
-## About the Rest Parameter
-
-The special ending `/*` in route paths define the `rest` parameter. This parameter collects “the rest of the path”, hence its name.
-
-Since all route path matching is exact, define the `rest` parameter in routes that need inexact, “starts with” matching.
+The special ending `/*` in route paths define the `rest` parameter. This parameter collects “the rest of the path”, hence its name.  Since all route path matching is exact, define the `rest` parameter in routes that need inexact, “starts with” matching.
 
 The `and` property accepts a predicate function that receives in its only parameter an object with the values of the defined route parameters, or `undefined` if the route didn’t define parameters. Use it to further constrain route matching. Depending on how you lay your application out, this can serve to create what other router implementations call “guarded routes”.
 
@@ -157,6 +153,67 @@ Note that the value of `fallback` will have been affected by the routes’ `igno
 ```
 
 As the example shows, we are in complete liberty of executing arbitrary code in the predicate.
+
+## The `rest` Parameter In Detail
+
+We have already learned that the `rest` parameter is a special ending commonly used to alter the route-matching behavior from *exact matching* to *starts-with matching*.  This is a good, but inaccurate start.  To clarify this, let's write some examples.
+
+First, the common scenario:
+
+```svelte
+<Route key="users" path="/users/*">
+  ...
+  <Router basePath="/users">
+    <Route key="user-settings" path="/settings">...</Route>
+    <Route key="user-activity" path="/activity">...</Route>
+    ...
+</Route>
+```
+
+This is typical:  We added a top route to group functionality together, and we use the `rest` parameter to make sure the route remains active for sub-paths  of the main `/users` path.
+
+Its second typical use is to collect any number of parameters:
+
+```svelte
+<Route key="search" path="/search/*">
+  {#snippet children({ rp })}
+    <Search input={rp?.rest} />
+  {/snippet}
+</Route>
+```
+
+Our search component would parse "the rest" of the query string and perform its duties.
+
+Note however, that the `rest` parameter only starts matching at the beginning of a segment.  To exemplify this behavior, let's see a couple of examples.
+
+Given the pattern `/files/*`:
+
+| Path | Matches? | Value of `rest` |
+| - | - | - |
+| `/files/required/description.xml` | ✔️ | `/required/description.xml` |
+| `/files-archive/required/description.xml` | ❌ | `undefined` |
+
+Finally, let's resolve the "inaccurate" part mentioned at the beginning:  The `rest` parameter can work in places different than the end of the string:
+
+```svelte
+<Route key="unusual-use-case" path="/base/*/:last">
+  {#snippet children({ rp })}
+    <h3>Parameters</h3>
+    <pre>{JSON.stringify(rp, null, 2)}</pre>
+  {/snippet}
+</Route>
+```
+
+For path `/base/my/unusual/case`, we would see this JSON:
+
+```json
+{
+  "last": "case",
+  "rest": "/my/unusual"
+}
+```
+
+So not really "the rest" of the path.  The amendment:  The `rest` parameter *typically* goes at the end of the pattern, but can be used in other places.
 
 ## Less Common Features
 

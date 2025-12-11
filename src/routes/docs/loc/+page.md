@@ -11,6 +11,44 @@ The total count is also shown without `RouterTrace`, which is a non-production c
 For detailed information about changes between releases, see the project’s [Releases page](https://github.com/WJSoftware/svelte-router/releases).
 :::
 
+## Version 1.0.6
+
+Lines of Code: **1,938** (**1,564** without `RouterTrace`)
+
+Command line: `cloc .\src\lib\ --exclude-dir=testing --exclude-ext=test.ts --exclude-lang=Markdown,SVG --strip-str-comments`
+
+cloc version: **v2.07**
+
+```plaintext
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+TypeScript                      29            152            949           1274
+Svelte                           6             74            350            664
+-------------------------------------------------------------------------------
+SUM:                            35            226           1299           1938
+-------------------------------------------------------------------------------
+```
+
+## Version 1.0.5
+
+Lines of Code: **1,938** (**1,564** without `RouterTrace`)
+
+Command line: `cloc .\src\lib\ --exclude-dir=testing --exclude-ext=test.ts --exclude-lang=Markdown,SVG --strip-str-comments`
+
+cloc version: **v2.07**
+
+```plaintext
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+TypeScript                      29            152            949           1274
+Svelte                           6             74            350            664
+-------------------------------------------------------------------------------
+SUM:                            35            226           1299           1938
+-------------------------------------------------------------------------------
+```
+
 ## Version 1.0.4
 
 Lines of Code: **1,934** (**1,560** without `RouterTrace`)
